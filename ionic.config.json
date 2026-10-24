@@ -1,0 +1,7 @@
+{
+  "name": "gestor_academico",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
