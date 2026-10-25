@@ -1,0 +1,28 @@
+﻿<div class="horario-wrapper">
+  <div class="horario-grid">
+    <div class="horario-header"></div>
+    <div class="horario-header" *ngFor="let dia of dias">{{ dia }}</div>
+
+    <ng-container *ngFor="let hora of horas">
+      <div class="horario-time">{{ hora }}</div>
+      <div class="horario-cell" *ngFor="let dia of dias">
+        <ng-container *ngFor="let b of getBloques(dia, hora)">
+          <div class="horario-card">
+            <div style="padding:10px 12px 6px 12px; font-weight:600;">{{ b.materia || b.grupo || 'Materia' }}</div>
+            <div style="padding:0 12px 10px 12px; font-size:0.82rem;">
+              <div>{{ b.grupo }}</div>
+              <div *ngIf="modo === 'alumno' && b.docente">Docente: {{ b.docente }}</div>
+              <div>Horario: {{ b.hora_inicio }} - {{ b.hora_fin }}</div>
+              <div>Salón: {{ b.salon || b.aula || '-' }}</div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+
+  <div *ngIf="!bloques || bloques.length === 0" class="empty-state">
+    <h3>Sin horario</h3>
+    <p>No hay clases asignadas para este periodo.</p>
+  </div>
+</div>

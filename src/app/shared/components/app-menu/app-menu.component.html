@@ -1,0 +1,18 @@
+﻿<div id="menu" class="menu">
+  <div style="background:linear-gradient(135deg,#4f46e5,#06b6d4);color:white;padding:12px;">Gestor</div>
+  <div style="padding:10px;">
+    <div>{{ auth.usuario().correo || 'Usuario' }}</div>
+    <small>{{ auth.usuario().rol }}</small>
+  </div>
+  <ng-container *ngIf="auth.usuario().rol === 'ADMIN'">
+    <div style="padding:8px 16px;" routerLink="/admin/carreras">Carreras</div>
+  </ng-container>
+  <ng-container *ngIf="auth.usuario().rol === 'DOCENTE'">
+    <div style="padding:8px 16px;" routerLink="/docente/horario">Horario</div>
+    <div style="padding:8px 16px;" routerLink="/docente/mis-grupos">Mis Grupos</div>
+  </ng-container>
+  <ng-container *ngIf="auth.usuario().rol === 'ALUMNO'">
+    <div style="padding:8px 16px;" routerLink="/alumno/horario">Mi Horario</div>
+  </ng-container>
+  <div style="padding:8px 16px;" (click)="logout()">Cerrar sesión</div>
+</div>

@@ -1,0 +1,1 @@
+<div class='ion-padding'><h2>Carreras</h2><button (click)='nuevo()'>Nueva</button><div *ngFor='let c of carreras' style='padding:10px; border-bottom:1px solid #eee;'><div><strong>{{c.nombre}}</strong> - {{c.clave}}</div><button (click)='editar(c)'>Editar</button> <button (click)='eliminar(c)'>Eliminar</button></div></div>
