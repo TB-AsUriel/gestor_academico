@@ -1,4 +1,4 @@
-﻿import { Injectable, signal } from '@angular/core';
+﻿import { Injectable, inject, signal } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { Router } from '@angular/router';
 
@@ -13,11 +13,11 @@ export interface UsuarioActual {
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly router = inject(Router);
+
   token = signal<string | null>(null);
   rol = signal<Rol | null>(null);
   usuario = signal<UsuarioActual>({ correo: null, rol: null });
-
-  constructor(private router: Router) {}
 
   async cargar(): Promise<void> {
     const t = await Preferences.get({ key: 'token' });

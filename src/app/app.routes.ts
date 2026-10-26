@@ -38,7 +38,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'horario', pathMatch: 'full' },
       { path: 'horario', loadComponent: () => import('./alumno/horario/horario.page').then((m) => m.HorarioPage) },
-      { path: 'mi-horario', loadComponent: () => import('./alumno/mi-horario/mi-horario.page').then((m) => m.MiHorarioPage) },
+      { path: 'mi-horario', redirectTo: 'horario', pathMatch: 'full' },
     ]
   },
 ];

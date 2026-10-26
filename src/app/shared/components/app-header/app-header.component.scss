@@ -1,0 +1,106 @@
+:host {
+  display: block;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface-elevated);
+  backdrop-filter: blur(16px);
+}
+
+.topbar-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.topbar-kicker {
+  color: var(--app-primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.topbar h1 {
+  overflow: hidden;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar p {
+  overflow: hidden;
+  color: var(--app-muted);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: var(--app-surface);
+  color: var(--app-text-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--app-border-strong);
+  background: var(--app-surface-2);
+  color: var(--app-text);
+}
+
+.theme-toggle ion-icon {
+  font-size: 1rem;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    padding: 13px 16px;
+    gap: 14px;
+  }
+
+  .topbar p,
+  .topbar-kicker,
+  .role-badge {
+    display: none;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
+
+  .theme-toggle {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+}

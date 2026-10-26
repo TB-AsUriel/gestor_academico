@@ -1,1 +1,132 @@
-<div><h1>Login</h1><input type='email' [(ngModel)]='correo' /><input type='password' [(ngModel)]='contra' /><button (click)='login()'>Ingresar</button><div *ngIf='error'>{{error}}</div></div>
+<div class="login-page">
+  <div class="login-shell">
+    <section class="brand-panel">
+      <div class="brand-top">
+        <div class="brand-mark">GA</div>
+        <span>Gestor Académico</span>
+      </div>
+
+      <div class="brand-content">
+        <span class="eyebrow">Plataforma académica</span>
+        <h1>Todo tu ciclo escolar, en un solo lugar.</h1>
+        <p>
+          Consulta horarios, grupos y la oferta académica de la institución desde una experiencia
+          clara, rápida y accesible.
+        </p>
+
+        <ul class="feature-list">
+          <li>
+            <span class="feature-icon"><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon></span>
+            <span>Horarios y clases siempre a la mano</span>
+          </li>
+          <li>
+            <span class="feature-icon"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span>
+            <span>Grupos y materias organizados por periodo</span>
+          </li>
+          <li>
+            <span class="feature-icon"><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon></span>
+            <span>Acceso seguro según tu rol institucional</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="brand-footer">
+        <span>Gestión académica institucional</span>
+        <span>Ciclo 2026</span>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-panel-top">
+        <div class="mobile-brand">
+          <div class="brand-mark">GA</div>
+          <span>Gestor Académico</span>
+        </div>
+
+        <button
+          type="button"
+          class="theme-toggle"
+          (click)="theme.alternar()"
+          [attr.aria-label]="theme.oscuro() ? 'Activar tema claro' : 'Activar tema oscuro'"
+          [attr.aria-pressed]="theme.oscuro()"
+        >
+          <ion-icon [name]="theme.oscuro() ? 'sunny-outline' : 'moon-outline'" aria-hidden="true"></ion-icon>
+          <span>{{ theme.oscuro() ? 'Claro' : 'Oscuro' }}</span>
+        </button>
+      </div>
+
+      <div class="login-card">
+        <div class="login-heading">
+          <span class="eyebrow">Bienvenido</span>
+          <h2>Inicia sesión</h2>
+          <p>Usa tu correo institucional y contraseña para entrar al panel.</p>
+        </div>
+
+        <form class="login-form" (ngSubmit)="login()">
+          <div class="field">
+            <label class="field-label" for="correo">Correo institucional</label>
+            <div class="input-wrap">
+              <ion-icon class="input-icon" name="mail-outline" aria-hidden="true"></ion-icon>
+              <input
+                id="correo"
+                class="input"
+                type="email"
+                name="correo"
+                autocomplete="email"
+                placeholder="nombre@universidad.edu.mx"
+                [(ngModel)]="correo"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="contra">Contraseña</label>
+            <div class="input-wrap">
+              <ion-icon class="input-icon" name="lock-closed-outline" aria-hidden="true"></ion-icon>
+              <input
+                id="contra"
+                class="input"
+                [type]="mostrarContra ? 'text' : 'password'"
+                name="contra"
+                autocomplete="current-password"
+                placeholder="Tu contraseña"
+                [(ngModel)]="contra"
+                required
+              />
+              <button
+                type="button"
+                class="input-action"
+                (click)="alternarContra()"
+                [attr.aria-label]="mostrarContra ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              >
+                <ion-icon [name]="mostrarContra ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          @if (error()) {
+            <div class="banner banner-danger" role="alert">
+              <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <button type="submit" class="btn btn-primary btn-block login-submit" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner" aria-hidden="true"></span>
+              <span>Ingresando...</span>
+            } @else {
+              <span>Entrar al panel</span>
+              <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+            }
+          </button>
+        </form>
+
+        <p class="login-hint">Acceso exclusivo para la comunidad universitaria.</p>
+      </div>
+
+      <p class="login-footer">Gestor Académico · Ciclo 2026</p>
+    </section>
+  </div>
+</div>

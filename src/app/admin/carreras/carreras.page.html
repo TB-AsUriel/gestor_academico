@@ -1,1 +1,102 @@
-<div class='ion-padding'><h2>Carreras</h2><button (click)='nuevo()'>Nueva</button><div *ngFor='let c of carreras' style='padding:10px; border-bottom:1px solid #eee;'><div><strong>{{c.nombre}}</strong> - {{c.clave}}</div><button (click)='editar(c)'>Editar</button> <button (click)='eliminar(c)'>Eliminar</button></div></div>
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="career-toolbar">
+    <div class="input-wrap search-wrap">
+      <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+      <input
+        class="input"
+        type="search"
+        name="busqueda"
+        placeholder="Buscar por clave o nombre..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        aria-label="Buscar carreras"
+      />
+      @if (busqueda()) {
+        <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <span class="career-count">
+      {{ carrerasFiltradas().length }} de {{ carreras().length }} carreras
+    </span>
+
+    <button type="button" class="btn btn-primary" (click)="nuevo()">
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+      <span>Nueva carrera</span>
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="career-grid" aria-live="polite">
+      @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+        <div class="skeleton career-skeleton"></div>
+      }
+    </div>
+  } @else if (carrerasFiltradas().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="school-outline" aria-hidden="true"></ion-icon>
+      </div>
+      @if (carreras().length === 0) {
+        <h3>Aún no hay carreras registradas</h3>
+        <p>Agrega la primera carrera para comenzar a construir la oferta académica.</p>
+        <button type="button" class="btn btn-primary" (click)="nuevo()">
+          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+          <span>Nueva carrera</span>
+        </button>
+      } @else {
+        <h3>Sin resultados</h3>
+        <p>No encontramos carreras que coincidan con “{{ busqueda() }}”.</p>
+        <button type="button" class="btn btn-secondary" (click)="limpiarBusqueda()">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          <span>Limpiar búsqueda</span>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="career-grid">
+      @for (carrera of carrerasFiltradas(); track carrera.clave_carrera) {
+        <article class="career-card">
+          <div class="career-card-top">
+            <span class="career-code">{{ carrera.clave_carrera }}</span>
+            <span class="badge badge-primary">Plan de estudios</span>
+          </div>
+
+          <h3>{{ carrera.nombre_carrera }}</h3>
+
+          <div class="career-metrics">
+            <div class="career-metric">
+              <span>{{ carrera.total_creditos }}</span>
+              <small>Créditos</small>
+            </div>
+            <div class="career-metric">
+              <span>{{ carrera.duracion_semestres }}</span>
+              <small>Semestres</small>
+            </div>
+          </div>
+
+          <div class="career-actions">
+            <button type="button" class="btn btn-secondary" (click)="editar(carrera)">
+              <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+              <span>Editar</span>
+            </button>
+            <button type="button" class="btn btn-ghost career-delete" (click)="eliminar(carrera)">
+              <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+              <span>Eliminar</span>
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

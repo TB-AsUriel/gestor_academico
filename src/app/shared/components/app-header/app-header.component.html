@@ -1,1 +1,23 @@
-<div style='background:linear-gradient(135deg,#4f46e5,#06b6d4);color:white;padding:12px;'>{{title}}</div>
+<header class="topbar">
+  <div class="topbar-copy">
+    <span class="topbar-kicker">Panel académico</span>
+    <h1>{{ title }}</h1>
+    @if (subtitle) {
+      <p>{{ subtitle }}</p>
+    }
+  </div>
+
+  <div class="topbar-actions">
+    <span class="badge badge-primary role-badge">{{ rolEtiqueta() }}</span>
+    <button
+      type="button"
+      class="theme-toggle"
+      (click)="theme.alternar()"
+      [attr.aria-label]="theme.oscuro() ? 'Activar tema claro' : 'Activar tema oscuro'"
+      [attr.aria-pressed]="theme.oscuro()"
+    >
+      <ion-icon [name]="theme.oscuro() ? 'sunny-outline' : 'moon-outline'" aria-hidden="true"></ion-icon>
+      <span>{{ theme.oscuro() ? 'Claro' : 'Oscuro' }}</span>
+    </button>
+  </div>
+</header>

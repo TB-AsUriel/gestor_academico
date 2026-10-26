@@ -1,28 +1,110 @@
-﻿<div class="horario-wrapper">
-  <div class="horario-grid">
-    <div class="horario-header"></div>
-    <div class="horario-header" *ngFor="let dia of dias">{{ dia }}</div>
+﻿@if (cargando) {
+  <div class="schedule-loading" aria-live="polite">
+    @for (item of [1, 2, 3, 4]; track item) {
+      <div class="skeleton schedule-loading-card"></div>
+    }
+  </div>
+} @else if (error) {
+  <div class="state-panel">
+    <div class="state-icon state-icon-danger">
+      <ion-icon name="cloud-offline-outline" aria-hidden="true"></ion-icon>
+    </div>
+    <h3>No se pudo cargar el horario</h3>
+    <p>{{ error }}</p>
+    <button type="button" class="btn btn-secondary" (click)="reintentar.emit()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Reintentar</span>
+    </button>
+  </div>
+} @else if (!bloques || bloques.length === 0) {
+  <div class="empty-state">
+    <div class="empty-icon">
+      <ion-icon name="calendar-clear-outline" aria-hidden="true"></ion-icon>
+    </div>
+    <h3>Sin horario para este periodo</h3>
+    <p>No hay clases asignadas todavía. Cuando se registren, aparecerán aquí.</p>
+  </div>
+} @else {
+  <div class="schedule-scroll">
+    <div class="schedule-grid">
+      <div class="schedule-corner">Hora</div>
+      @for (dia of dias; track dia) {
+        <div class="schedule-day">{{ dia }}</div>
+      }
 
-    <ng-container *ngFor="let hora of horas">
-      <div class="horario-time">{{ hora }}</div>
-      <div class="horario-cell" *ngFor="let dia of dias">
-        <ng-container *ngFor="let b of getBloques(dia, hora)">
-          <div class="horario-card">
-            <div style="padding:10px 12px 6px 12px; font-weight:600;">{{ b.materia || b.grupo || 'Materia' }}</div>
-            <div style="padding:0 12px 10px 12px; font-size:0.82rem;">
-              <div>{{ b.grupo }}</div>
-              <div *ngIf="modo === 'alumno' && b.docente">Docente: {{ b.docente }}</div>
-              <div>Horario: {{ b.hora_inicio }} - {{ b.hora_fin }}</div>
-              <div>Salón: {{ b.salon || b.aula || '-' }}</div>
-            </div>
+      @for (hora of horas; track hora) {
+        <div class="schedule-time">{{ hora }}</div>
+        @for (dia of dias; track dia) {
+          <div class="schedule-cell">
+            @for (bloque of getBloques(dia, hora); track bloque.id_horario ?? $index) {
+              <article class="schedule-card {{ colorMateria(bloque) }}">
+                <div class="schedule-card-top">
+                  <strong>{{ bloque.materia || 'Materia' }}</strong>
+                  @if (bloque.clave_materia) {
+                    <span class="schedule-code">{{ bloque.clave_materia }}</span>
+                  }
+                </div>
+                <div class="schedule-meta">
+                  <span>{{ bloque.grupo || 'Sin grupo' }}</span>
+                  <span>{{ formatoHora(bloque.hora_inicio) }} - {{ formatoHora(bloque.hora_fin) }}</span>
+                </div>
+                <div class="schedule-meta">
+                  <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+                  <span>{{ bloque.salon || bloque.aula || 'Sin aula' }}</span>
+                </div>
+                @if (modo === 'alumno' && bloque.docente) {
+                  <div class="schedule-meta">
+                    <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+                    <span>{{ bloque.docente }}</span>
+                  </div>
+                }
+              </article>
+            }
           </div>
-        </ng-container>
-      </div>
-    </ng-container>
+        }
+      }
+    </div>
   </div>
 
-  <div *ngIf="!bloques || bloques.length === 0" class="empty-state">
-    <h3>Sin horario</h3>
-    <p>No hay clases asignadas para este periodo.</p>
+  <div class="agenda">
+    @for (dia of dias; track dia) {
+      @if (bloquesDia(dia).length > 0) {
+        <section class="agenda-day">
+          <div class="agenda-day-header">
+            <h3>{{ dia }}</h3>
+            <span>{{ bloquesDia(dia).length }} {{ bloquesDia(dia).length === 1 ? 'clase' : 'clases' }}</span>
+          </div>
+
+          <div class="agenda-list">
+            @for (bloque of bloquesDia(dia); track bloque.id_horario ?? $index) {
+              <article class="agenda-card {{ colorMateria(bloque) }}">
+                <div class="agenda-time">
+                  <strong>{{ formatoHora(bloque.hora_inicio) }}</strong>
+                  <span>{{ formatoHora(bloque.hora_fin) }}</span>
+                </div>
+                <div class="agenda-body">
+                  <div class="agenda-title">
+                    <strong>{{ bloque.materia || 'Materia' }}</strong>
+                    @if (bloque.clave_materia) {
+                      <span class="schedule-code">{{ bloque.clave_materia }}</span>
+                    }
+                  </div>
+                  <div class="agenda-meta">
+                    <span>{{ bloque.grupo || 'Sin grupo' }}</span>
+                    <span>{{ bloque.salon || bloque.aula || 'Sin aula' }}</span>
+                  </div>
+                  @if (modo === 'alumno' && bloque.docente) {
+                    <div class="agenda-meta">
+                      <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+                      <span>{{ bloque.docente }}</span>
+                    </div>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    }
   </div>
-</div>
+}

@@ -1,1 +1,146 @@
-﻿<div class='ion-padding'><h2>Mis Grupos</h2></div>
+﻿<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().grupos }}</div>
+        <div class="stat-label">Grupos asignados</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="book-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().materias }}</div>
+        <div class="stat-label">Materias distintas</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="documents-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().asignaciones }}</div>
+        <div class="stat-label">Asignaciones activas</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().periodo }}</div>
+        <div class="stat-label">Periodo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="group-toolbar">
+    <div class="input-wrap search-wrap">
+      <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+      <input
+        class="input"
+        type="search"
+        name="busqueda"
+        placeholder="Buscar por grupo o materia..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        aria-label="Buscar grupos o materias"
+      />
+      @if (busqueda()) {
+        <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <span class="group-count">
+      {{ gruposFiltrados().length }} de {{ grupos().length }} grupos
+    </span>
+
+    <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Actualizar</span>
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="group-grid" aria-live="polite">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="skeleton group-skeleton"></div>
+      }
+    </div>
+  } @else if (gruposFiltrados().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+      </div>
+      @if (grupos().length === 0) {
+        <h3>Sin grupos asignados</h3>
+        <p>Aún no tienes grupos registrados. Contacta a la coordinación académica si esto no debería ocurrir.</p>
+      } @else {
+        <h3>Sin resultados</h3>
+        <p>No encontramos grupos o materias que coincidan con “{{ busqueda() }}”.</p>
+        <button type="button" class="btn btn-secondary" (click)="limpiarBusqueda()">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          <span>Limpiar búsqueda</span>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="group-grid">
+      @for (grupo of gruposFiltrados(); track grupo.clave_periodo + '|' + grupo.clave_grupo) {
+        <article class="group-card">
+          <div class="group-card-header">
+            <div class="group-code">
+              <span class="group-code-icon">
+                <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+              </span>
+              <div>
+                <strong>{{ grupo.clave_grupo }}</strong>
+                <small>Semestre {{ grupo.semestre }}</small>
+              </div>
+            </div>
+            <span class="badge badge-primary">{{ grupo.clave_periodo }}</span>
+          </div>
+
+          <div class="group-meta">
+            <span>
+              <ion-icon name="sunny-outline" aria-hidden="true"></ion-icon>
+              {{ turnoEtiqueta(grupo.turno) }}
+            </span>
+            <span>
+              <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
+              {{ grupo.materias.length }} materias
+            </span>
+          </div>
+
+          <ul class="group-materias">
+            @for (materia of grupo.materias; track materia.id_asignacion) {
+              <li class="materia-item">
+                <span class="materia-dot"></span>
+                <div class="materia-copy">
+                  <strong>{{ materia.nombre_materia }}</strong>
+                  <small>{{ materia.clave_materia }} · {{ materia.creditos }} créditos</small>
+                </div>
+              </li>
+            }
+          </ul>
+
+          <div class="group-footer">
+            <a class="btn btn-secondary" routerLink="/docente/horario">
+              <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+              <span>Ver horario</span>
+            </a>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

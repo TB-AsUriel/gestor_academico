@@ -1,18 +1,51 @@
-﻿<div id="menu" class="menu">
-  <div style="background:linear-gradient(135deg,#4f46e5,#06b6d4);color:white;padding:12px;">Gestor</div>
-  <div style="padding:10px;">
-    <div>{{ auth.usuario().correo || 'Usuario' }}</div>
-    <small>{{ auth.usuario().rol }}</small>
+﻿<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">GA</div>
+    <div class="brand-copy">
+      <strong>Gestor Académico</strong>
+      <span>Panel institucional</span>
+    </div>
   </div>
-  <ng-container *ngIf="auth.usuario().rol === 'ADMIN'">
-    <div style="padding:8px 16px;" routerLink="/admin/carreras">Carreras</div>
-  </ng-container>
-  <ng-container *ngIf="auth.usuario().rol === 'DOCENTE'">
-    <div style="padding:8px 16px;" routerLink="/docente/horario">Horario</div>
-    <div style="padding:8px 16px;" routerLink="/docente/mis-grupos">Mis Grupos</div>
-  </ng-container>
-  <ng-container *ngIf="auth.usuario().rol === 'ALUMNO'">
-    <div style="padding:8px 16px;" routerLink="/alumno/horario">Mi Horario</div>
-  </ng-container>
-  <div style="padding:8px 16px;" (click)="logout()">Cerrar sesión</div>
-</div>
+
+  <div class="user-card">
+    <div class="avatar">{{ inicial() }}</div>
+    <div class="user-copy">
+      <span class="user-email">{{ auth.usuario().correo || 'Usuario' }}</span>
+      <span class="user-role">{{ rolEtiqueta() }}</span>
+    </div>
+  </div>
+
+  <nav class="nav" aria-label="Navegación principal">
+    @if (auth.usuario().rol === 'ADMIN') {
+      <a class="nav-link" routerLink="/admin/carreras" routerLinkActive="active">
+        <ion-icon name="school-outline" aria-hidden="true"></ion-icon>
+        <span>Carreras</span>
+      </a>
+    }
+
+    @if (auth.usuario().rol === 'DOCENTE') {
+      <a class="nav-link" routerLink="/docente/horario" routerLinkActive="active">
+        <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        <span>Horario</span>
+      </a>
+      <a class="nav-link" routerLink="/docente/mis-grupos" routerLinkActive="active">
+        <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+        <span>Mis grupos</span>
+      </a>
+    }
+
+    @if (auth.usuario().rol === 'ALUMNO') {
+      <a class="nav-link" routerLink="/alumno/horario" routerLinkActive="active">
+        <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        <span>Mi horario</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <button type="button" class="logout-button" (click)="logout()">
+      <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  </div>
+</aside>

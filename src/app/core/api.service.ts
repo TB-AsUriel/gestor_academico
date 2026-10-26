@@ -1,38 +1,51 @@
-﻿import { Injectable } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
-import { Carrera } from '../shared/interfaces';
+import { environment } from '../../environments/environment';
+import {
+  AsignacionDocente,
+  Carrera,
+  HorarioBloque,
+  RespuestaApi,
+  RespuestaLista
+} from '../shared/interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private base = environment.apiUrl;
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
-
-  getCarreras(): Observable<Carrera[] | { data: Carrera[] }> {
-    return this.http.get<Carrera[] | { data: Carrera[] }>(this.base + '/admin/carreras.php');
+  getCarreras(): Observable<Carrera[] | RespuestaLista<Carrera>> {
+    return this.http.get<Carrera[] | RespuestaLista<Carrera>>(this.base + '/admin/carreras.php');
   }
 
-  crearCarrera(data: Partial<Carrera>): Observable<any> {
-    return this.http.post(this.base + '/admin/carreras.php', data);
+  crearCarrera(data: Carrera): Observable<RespuestaApi> {
+    return this.http.post<RespuestaApi>(this.base + '/admin/carreras.php', data);
   }
 
-  actualizarCarrera(data: Partial<Carrera>): Observable<any> {
-    return this.http.put(this.base + '/admin/carreras.php', data);
+  actualizarCarrera(data: Carrera): Observable<RespuestaApi> {
+    return this.http.put<RespuestaApi>(this.base + '/admin/carreras.php', data);
   }
 
-  eliminarCarrera(id_carrera: number): Observable<any> {
-    return this.http.request('delete', this.base + '/admin/carreras.php', { body: { id_carrera } });
+  eliminarCarrera(claveCarrera: string): Observable<RespuestaApi> {
+    return this.http.request<RespuestaApi>('delete', this.base + '/admin/carreras.php', {
+      body: { clave_carrera: claveCarrera }
+    });
   }
 
-  getHorarioDocente(): Observable<any> {
-    return this.http.get(this.base + '/docente/horario.php');
+  getHorarioDocente(): Observable<HorarioBloque[] | RespuestaLista<HorarioBloque>> {
+    return this.http.get<HorarioBloque[] | RespuestaLista<HorarioBloque>>(this.base + '/docente/horario.php');
   }
 
-  getHorarioAlumno(): Observable<any> {
-    return this.http.get(this.base + '/alumno/horario.php');
+  getHorarioAlumno(): Observable<HorarioBloque[] | RespuestaLista<HorarioBloque>> {
+    return this.http.get<HorarioBloque[] | RespuestaLista<HorarioBloque>>(this.base + '/alumno/horario.php');
+  }
+
+  getMisAsignaciones(): Observable<AsignacionDocente[] | RespuestaLista<AsignacionDocente>> {
+    return this.http.get<AsignacionDocente[] | RespuestaLista<AsignacionDocente>>(
+      this.base + '/docente/mis-asignaciones.php'
+    );
   }
 }

@@ -1,1 +1,51 @@
-<div class='ion-padding'><h2>Mi Horario</h2><app-horario-grid [bloques]='bloques' modo='alumno'></app-horario-grid></div>
+<div class="page">
+  <div class="page-toolbar">
+    <span class="badge badge-primary">{{ periodo() }}</span>
+    <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Actualizar</span>
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().clases }}</div>
+        <div class="stat-label">Clases programadas</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="book-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().materias }}</div>
+        <div class="stat-label">Materias distintas</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="time-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().horas + ' h' }}</div>
+        <div class="stat-label">Carga semanal</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="school-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ periodo() }}</div>
+        <div class="stat-label">Periodo activo</div>
+      </div>
+    </div>
+  </div>
+
+  <app-horario-grid
+    [bloques]="bloques()"
+    [cargando]="loading()"
+    [error]="error()"
+    modo="alumno"
+    (reintentar)="cargar()"
+  ></app-horario-grid>
+</div>
