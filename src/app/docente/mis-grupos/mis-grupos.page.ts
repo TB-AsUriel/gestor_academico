@@ -3,14 +3,28 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { IonIcon } from '@ionic/angular';
 import { ApiService } from '../../core/api.service';
-import { AsignacionDocente } from '../../shared/interfaces';
+import { DocenteCarga } from '../../shared/interfaces';
+
+interface HorarioGrupo {
+  dia: string;
+  inicio: string;
+  fin: string;
+  salon: string;
+}
 
 interface GrupoDocente {
   clave_grupo: string;
+  clave_materia: string;
+  nombre_materia: string;
+  creditos: number;
   semestre: string;
   turno: string;
   clave_periodo: string;
-  materias: AsignacionDocente[];
+  nombre_periodo: string;
+  periodo_activo: boolean;
+  cupo: number;
+  inscritos: number;
+  horarios: HorarioGrupo[];
 }
 
 @Component({
@@ -23,7 +37,7 @@ interface GrupoDocente {
 export class MisGruposPage implements OnInit {
   private readonly api = inject(ApiService);
 
-  readonly asignaciones = signal<AsignacionDocente[]>([]);
+  readonly filas = signal<DocenteCarga[]>([]);
   readonly loading = signal(false);
   readonly error = signal('');
   readonly busqueda = signal('');
@@ -31,26 +45,49 @@ export class MisGruposPage implements OnInit {
   readonly grupos = computed<GrupoDocente[]>(() => {
     const mapa = new Map<string, GrupoDocente>();
 
-    for (const asignacion of this.asignaciones()) {
-      const clave = `${asignacion.clave_periodo}|${asignacion.clave_grupo}`;
-      const grupo = mapa.get(clave);
+    for (const fila of this.filas()) {
+      const clave = `${fila.clave_periodo}|${fila.clave_grupo}`;
+      let grupo = mapa.get(clave);
 
-      if (grupo) {
-        grupo.materias.push(asignacion);
-        continue;
+      if (!grupo) {
+        grupo = {
+          clave_grupo: String(fila.clave_grupo ?? ''),
+          clave_materia: String(fila.clave_materia ?? ''),
+          nombre_materia: String(fila.nombre_materia ?? ''),
+          creditos: Number(fila.creditos ?? 0),
+          semestre: String((fila as any).semestre ?? ''),
+          turno: String((fila as any).turno ?? ''),
+          clave_periodo: String(fila.clave_periodo ?? ''),
+          nombre_periodo: String(fila.nombre_periodo ?? ''),
+          periodo_activo: Number(fila.periodo_activo) === 1,
+          cupo: Number((fila as any).cupo ?? 0),
+          inscritos: Number(fila.inscritos ?? 0),
+          horarios: []
+        };
+        mapa.set(clave, grupo);
       }
 
-      mapa.set(clave, {
-        clave_grupo: asignacion.clave_grupo,
-        semestre: String(asignacion.semestre),
-        turno: asignacion.turno,
-        clave_periodo: asignacion.clave_periodo,
-        materias: [asignacion]
-      });
+      if (fila.nombre_dia && fila.hora_inicio && fila.hora_fin) {
+        const repetido = grupo.horarios.some(
+          (horario) =>
+            horario.dia === fila.nombre_dia &&
+            horario.inicio === fila.hora_inicio &&
+            horario.fin === fila.hora_fin
+        );
+        if (!repetido) {
+          grupo.horarios.push({
+            dia: fila.nombre_dia,
+            inicio: fila.hora_inicio,
+            fin: fila.hora_fin,
+            salon: fila.salon || '—'
+          });
+        }
+      }
     }
 
     return Array.from(mapa.values()).sort(
       (a, b) =>
+        Number(b.periodo_activo) - Number(a.periodo_activo) ||
         b.clave_periodo.localeCompare(a.clave_periodo) ||
         a.clave_grupo.localeCompare(b.clave_grupo)
     );
@@ -63,11 +100,8 @@ export class MisGruposPage implements OnInit {
     return this.grupos().filter(
       (grupo) =>
         grupo.clave_grupo.toLowerCase().includes(termino) ||
-        grupo.materias.some(
-          (materia) =>
-            materia.clave_materia.toLowerCase().includes(termino) ||
-            materia.nombre_materia.toLowerCase().includes(termino)
-        )
+        grupo.clave_materia.toLowerCase().includes(termino) ||
+        grupo.nombre_materia.toLowerCase().includes(termino)
     );
   });
 
@@ -77,8 +111,8 @@ export class MisGruposPage implements OnInit {
 
     return {
       grupos: grupos.length,
-      materias: new Set(this.asignaciones().map((asignacion) => asignacion.clave_materia)).size,
-      asignaciones: this.asignaciones().length,
+      materias: new Set(grupos.map((grupo) => grupo.clave_materia)).size,
+      alumnos: grupos.reduce((total, grupo) => total + grupo.inscritos, 0),
       periodo:
         periodos.size === 0
           ? '—'
@@ -96,14 +130,13 @@ export class MisGruposPage implements OnInit {
     this.loading.set(true);
     this.error.set('');
 
-    this.api.getMisAsignaciones().subscribe({
+    this.api.getDocenteGrupos().subscribe({
       next: (res) => {
-        const data = Array.isArray(res) ? res : res?.data ?? [];
-        this.asignaciones.set(data);
+        this.filas.set(res.data ?? []);
         this.loading.set(false);
       },
       error: (err) => {
-        this.asignaciones.set([]);
+        this.filas.set([]);
         this.loading.set(false);
         this.error.set(err?.error?.message || 'No se pudieron cargar tus grupos asignados.');
       }
@@ -112,6 +145,11 @@ export class MisGruposPage implements OnInit {
 
   limpiarBusqueda(): void {
     this.busqueda.set('');
+  }
+
+  ocupacion(grupo: GrupoDocente): number {
+    if (grupo.cupo <= 0) return 0;
+    return Math.min(100, Math.round((grupo.inscritos / grupo.cupo) * 100));
   }
 
   turnoEtiqueta(turno: string): string {

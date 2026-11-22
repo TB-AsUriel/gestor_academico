@@ -1,0 +1,207 @@
+﻿<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargarGrupos()">Reintentar</button>
+    </div>
+  }
+
+  <div class="toolbar">
+    <label class="field group-select">
+      <span class="field-label">Grupo</span>
+      <select class="input" name="clave_grupo" [ngModel]="claveGrupo()" (ngModelChange)="seleccionarGrupo($event)">
+        @for (grupo of grupos(); track grupo.clave_grupo) {
+          <option [ngValue]="grupo.clave_grupo">
+            {{ grupo.clave_grupo }} - {{ grupo.nombre_materia }} - {{ grupo.nombre_docente || 'Sin docente' }}
+          </option>
+        }
+      </select>
+    </label>
+
+    <div class="input-wrap">
+      <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+      <input
+        class="input"
+        type="search"
+        name="busqueda"
+        placeholder="Buscar alumno..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+      @if (busqueda()) {
+        <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <button type="button" class="btn btn-secondary" (click)="cargarCalificaciones()" [disabled]="loading()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Actualizar</span>
+    </button>
+  </div>
+
+  @if (grupo(); as info) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ resumen().total }}</div>
+          <div class="stat-label">Alumnos inscritos</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="create-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ resumen().capturadas }}</div>
+          <div class="stat-label">Calificaciones capturadas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ resumen().aprobados }}</div>
+          <div class="stat-label">Aprobados</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="close-circle-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ resumen().reprobados }}</div>
+          <div class="stat-label">Reprobados</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group-summary">
+      <span class="badge badge-primary">Grupo {{ info.clave_grupo }}</span>
+      <span class="badge">{{ info.nombre_materia }}</span>
+      <span class="badge">{{ info.nombre_docente || 'Sin docente' }}</span>
+      <span class="badge">{{ info.inscritos }}/{{ info.cupo }} inscritos</span>
+    </div>
+  }
+
+  @if (formOpen()) {
+    <section class="form-card">
+      <div class="form-card-head">
+        <div>
+          <h3>Capturar calificación</h3>
+          <p>{{ valores().nombre_alumno }} · {{ valores().numero_control }}</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-icon" (click)="cancelar()" aria-label="Cerrar">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Calificación ordinaria</span>
+          <input
+            class="input"
+            type="number"
+            name="calificacion_ordinaria"
+            min="0"
+            max="100"
+            step="0.01"
+            [ngModel]="valores().calificacion_ordinaria"
+            (ngModelChange)="setValor('calificacion_ordinaria', $event)"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Segunda oportunidad</span>
+          <input
+            class="input"
+            type="number"
+            name="calificacion_segunda_oportunidad"
+            min="0"
+            max="100"
+            step="0.01"
+            [ngModel]="valores().calificacion_segunda_oportunidad"
+            (ngModelChange)="setValor('calificacion_segunda_oportunidad', $event)"
+          />
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="guardando()">
+          @if (guardando()) {
+            <span class="spinner" aria-hidden="true"></span>
+          } @else {
+            <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
+          }
+          <span>Guardar calificación</span>
+        </button>
+      </div>
+    </section>
+  }
+
+  <div class="data-card">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>No. control</th>
+            <th>Alumno</th>
+            <th>Ordinaria</th>
+            <th>2da oportunidad</th>
+            <th>Final</th>
+            <th>Resultado</th>
+            <th>Capturada</th>
+            <th class="actions-col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            @for (item of [1, 2, 3, 4]; track item) {
+              <tr>
+                @for (col of [1, 2, 3, 4, 5, 6, 7, 8]; track col) {
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                }
+              </tr>
+            }
+          } @else {
+            @for (fila of filtradas(); track fila.numero_control + '|' + fila.clave_grupo) {
+              <tr>
+                <td>{{ fila.numero_control }}</td>
+                <td><strong>{{ fila.nombre_alumno }}</strong></td>
+                <td>{{ dato(fila.calificacion_ordinaria) }}</td>
+                <td>{{ dato(fila.calificacion_segunda_oportunidad) }}</td>
+                <td>{{ dato(fila.calificacion_final) }}</td>
+                <td>
+                  <span [class]="'badge ' + resultadoBadge(fila.resultado || '')">{{ fila.resultado }}</span>
+                </td>
+                <td>{{ capturada(fila) ? 'Sí' : 'Pendiente' }}</td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="capturar(fila)">
+                      <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+                      <span>Capturar</span>
+                    </button>
+                    @if (capturada(fila)) {
+                      <button type="button" class="btn btn-ghost btn-sm" (click)="eliminar(fila)" aria-label="Eliminar">
+                        <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (!loading() && filtradas().length === 0) {
+      <div class="table-empty">
+        @if (claveGrupo()) {
+          No hay alumnos inscritos o no coinciden con la búsqueda.
+        } @else {
+          Selecciona un grupo para capturar calificaciones.
+        }
+      </div>
+    }
+  </div>
+</div>

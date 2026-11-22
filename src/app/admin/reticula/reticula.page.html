@@ -1,0 +1,200 @@
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="toolbar">
+    <div class="input-wrap">
+      <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+      <input
+        class="input"
+        type="search"
+        name="busqueda"
+        placeholder="Buscar por plan, materia o semestre..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+      @if (busqueda()) {
+        <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <span class="toolbar-meta">{{ filasFiltradas().length }} de {{ filas().length }} materias</span>
+
+    <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Actualizar</span>
+    </button>
+
+    <button type="button" class="btn btn-primary" (click)="nuevo()">
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+      <span>Agregar materia</span>
+    </button>
+  </div>
+
+  @if (formOpen()) {
+    <section class="form-card">
+      <div class="form-card-head">
+        <div>
+          <h3>{{ editando() ? 'Editar materia de retícula' : 'Agregar materia a retícula' }}</h3>
+          <p>Asocia una materia a un plan de estudios y define su semestre y créditos.</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-icon" (click)="cancelar()" aria-label="Cerrar">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Plan de estudios *</span>
+          <select
+            class="input"
+            name="plan_estudios"
+            [ngModel]="valores().plan_estudios"
+            (ngModelChange)="setValor('plan_estudios', $event)"
+            [disabled]="editando()"
+            required
+          >
+            <option value="">Selecciona un plan</option>
+            @for (carrera of carreras(); track carrera.clave_carrera) {
+              <option [value]="carrera.plan_estudios || ''">
+                {{ carrera.plan_estudios }} - {{ carrera.nombre_carrera }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Materia *</span>
+          <select
+            class="input"
+            name="clave_materia"
+            [ngModel]="valores().clave_materia"
+            (ngModelChange)="setValor('clave_materia', $event)"
+            [disabled]="editando()"
+            required
+          >
+            <option value="">Selecciona una materia</option>
+            @for (materia of materias(); track materia.clave_materia) {
+              <option [value]="materia.clave_materia">
+                {{ materia.clave_materia }} - {{ materia.nombre_materia }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Semestre *</span>
+          <input
+            class="input"
+            type="number"
+            name="semestre"
+            min="1"
+            [ngModel]="valores().semestre"
+            (ngModelChange)="setValor('semestre', $event)"
+            required
+          />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Créditos *</span>
+          <input
+            class="input"
+            type="number"
+            name="creditos"
+            min="1"
+            [ngModel]="valores().creditos"
+            (ngModelChange)="setValor('creditos', $event)"
+            required
+          />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Materia antecedente</span>
+          <input
+            class="input"
+            type="text"
+            name="cadena_materia"
+            placeholder="Opcional"
+            [ngModel]="valores().cadena_materia"
+            (ngModelChange)="setValor('cadena_materia', $event)"
+          />
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="guardando()">
+          @if (guardando()) {
+            <span class="spinner" aria-hidden="true"></span>
+          } @else {
+            <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
+          }
+          <span>Guardar</span>
+        </button>
+      </div>
+    </section>
+  }
+
+  <div class="data-card">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Carrera</th>
+            <th>Semestre</th>
+            <th>Clave</th>
+            <th>Materia</th>
+            <th>Créditos</th>
+            <th>Antecedente</th>
+            <th class="actions-col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            @for (item of [1, 2, 3, 4]; track item) {
+              <tr>
+                @for (col of [1, 2, 3, 4, 5, 6, 7, 8]; track col) {
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                }
+              </tr>
+            }
+          } @else {
+            @for (fila of filasFiltradas(); track fila.clave_reticula) {
+              <tr>
+                <td><strong>{{ fila.plan_estudios }}</strong></td>
+                <td>{{ fila.nombre_carrera }}</td>
+                <td>{{ fila.semestre }}</td>
+                <td>{{ fila.clave_materia }}</td>
+                <td>{{ fila.nombre_materia }}</td>
+                <td>{{ fila.creditos }}</td>
+                <td>{{ fila.cadena_materia || '—' }}</td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="editar(fila)" aria-label="Editar">
+                      <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm" (click)="eliminar(fila)" aria-label="Eliminar">
+                      <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (!loading() && filasFiltradas().length === 0) {
+      <div class="table-empty">No hay materias de retícula registradas.</div>
+    }
+  </div>
+</div>

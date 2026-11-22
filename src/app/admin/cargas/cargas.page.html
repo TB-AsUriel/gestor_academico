@@ -1,0 +1,160 @@
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="toolbar">
+    <div class="input-wrap">
+      <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+      <input
+        class="input"
+        type="search"
+        name="busqueda"
+        placeholder="Buscar por alumno, grupo o materia..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+      @if (busqueda()) {
+        <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <span class="toolbar-meta">{{ filasFiltradas().length }} de {{ filas().length }} inscripciones</span>
+
+    <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Actualizar</span>
+    </button>
+
+    <button type="button" class="btn btn-primary" (click)="nuevo()">
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+      <span>Nueva inscripción</span>
+    </button>
+  </div>
+
+  @if (formOpen()) {
+    <section class="form-card">
+      <div class="form-card-head">
+        <div>
+          <h3>{{ editando() ? 'Editar inscripción' : 'Inscribir alumno' }}</h3>
+          <p>Asocia un alumno a un grupo. El grupo determina materia, docente y edificio.</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-icon" (click)="cancelar()" aria-label="Cerrar">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Alumno *</span>
+          <select
+            class="input"
+            name="numero_control"
+            [ngModel]="valores().numero_control"
+            (ngModelChange)="setValor('numero_control', $event)"
+            required
+          >
+            <option value="">Selecciona un alumno</option>
+            @for (alumno of alumnos(); track alumno.numero_control) {
+              <option [value]="alumno.numero_control">
+                {{ alumno.numero_control }} - {{ alumno.nombre }} {{ alumno.apellido_paterno }} {{ alumno.apellido_materno || '' }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Grupo *</span>
+          <select
+            class="input"
+            name="clave_grupo"
+            [ngModel]="valores().clave_grupo"
+            (ngModelChange)="setValor('clave_grupo', $event)"
+            required
+          >
+            <option value="">Selecciona un grupo</option>
+            @for (grupo of grupos(); track grupo.clave_grupo) {
+              <option [value]="grupo.clave_grupo">
+                {{ grupo.clave_grupo }} - {{ grupo.nombre_materia }} - {{ grupo.nombre_docente || 'Sin docente' }}
+              </option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="guardando()">
+          @if (guardando()) {
+            <span class="spinner" aria-hidden="true"></span>
+          } @else {
+            <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
+          }
+          <span>Guardar inscripción</span>
+        </button>
+      </div>
+    </section>
+  }
+
+  <div class="data-card">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>No. control</th>
+            <th>Alumno</th>
+            <th>Grupo</th>
+            <th>Materia</th>
+            <th>Docente</th>
+            <th>Estatus</th>
+            <th class="actions-col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            @for (item of [1, 2, 3, 4]; track item) {
+              <tr>
+                @for (col of [1, 2, 3, 4, 5, 6, 7]; track col) {
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                }
+              </tr>
+            }
+          } @else {
+            @for (fila of filasFiltradas(); track fila.id_carga) {
+              <tr>
+                <td>{{ fila.numero_control }}</td>
+                <td><strong>{{ fila.nombre_alumno }}</strong></td>
+                <td>{{ fila.clave_grupo }}</td>
+                <td>{{ fila.nombre_materia }}</td>
+                <td>{{ fila.nombre_docente || '—' }}</td>
+                <td>
+                  <span [class]="'badge ' + estatusBadge(fila.estatus)">{{ fila.estatus }}</span>
+                </td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="editar(fila)" aria-label="Editar">
+                      <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm" (click)="eliminar(fila)" aria-label="Eliminar">
+                      <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (!loading() && filasFiltradas().length === 0) {
+      <div class="table-empty">No hay inscripciones registradas.</div>
+    }
+  </div>
+</div>

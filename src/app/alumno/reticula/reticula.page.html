@@ -1,0 +1,93 @@
+﻿<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="layers-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().total }}</div>
+        <div class="stat-label">Materias del plan</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().cursadas }}</div>
+        <div class="stat-label">Cursadas</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="play-circle-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().cursando }}</div>
+        <div class="stat-label">Cursando</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="ribbon-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().creditos }}</div>
+        <div class="stat-label">Créditos totales</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reticula-head card">
+    <div>
+      <span class="page-eyebrow">Plan de estudios</span>
+      <h3>{{ carrera() }}</h3>
+      <p class="muted">{{ plan() }}</p>
+    </div>
+    <div class="legend">
+      <span class="badge badge-success">Cursada</span>
+      <span class="badge badge-primary">Cursando</span>
+      <span class="badge badge-warning">Por cursar</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton list-skeleton"></div>
+  } @else if (semestres().length === 0) {
+    <div class="empty-state card">
+      <ion-icon name="git-branch-outline" aria-hidden="true"></ion-icon>
+      <h3>Sin retícula</h3>
+      <p class="muted">No se encontró el plan de estudios de tu carrera.</p>
+    </div>
+  } @else {
+    <div class="semestres-grid">
+      @for (semestre of semestres(); track semestre.semestre) {
+        <section class="semestre-card card">
+          <ul class="materia-list">
+            @for (materia of semestre.materias; track materia.clave_materia) {
+              <li class="materia-item">
+                <div class="materia-info">
+                  <strong>{{ materia.nombre_materia }}</strong>
+                  <span class="muted">
+                    {{ materia.clave_materia }} · {{ materia.tipo_materia }} · {{ materia.creditos }} cr.
+                  </span>
+                  @if (materia.cadena_materia) {
+                    <span class="cadena">
+                      <ion-icon name="link-outline" aria-hidden="true"></ion-icon>
+                      Requiere {{ materia.cadena_materia }}
+                    </span>
+                  }
+                </div>
+                <span [class]="'badge ' + situacionBadge(materia.situacion ?? '')">
+                  {{ situacionLabel(materia.situacion ?? '') }}
+                </span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+  }
+</div>
+
+

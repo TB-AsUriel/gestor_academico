@@ -1,0 +1,91 @@
+﻿==== AREAS (line 65) ====
+  id_area_rol|INT(10)|pk=true|null=false
+  nombre_area|VARCHAR(30)|pk=false|null=false
+  poblacion|NUM(5)|pk=false|null=true
+  matricula_trabajador|INT(10)|pk=true|null=false
+==== DOCENTES (line 195) ====
+  matricula_trabajador|INT(10)|pk=true|null=false
+  nombre|VARCHAR(30)|pk=false|null=false
+  snombre|VARCHAR(30)|pk=false|null=true
+  apellido_paterno|VARCHAR(30)|pk=false|null=false
+  apellido_materno|VARCHAR(30)|pk=false|null=false
+  genero|ENUM("H","M")|pk=false|null=false
+  fecha_nacimiento|DATE|pk=false|null=false
+==== HISTORIAL_DOCENTES (line 465) ====
+  id_rol|INT(10)|pk=true|null=false
+  administrativo|ENUM("SI","NO")|pk=false|null=false
+  docente|ENUM("SI","NO")|pk=false|null=false
+  fecha_inicio|DATE|pk=false|null=false
+  fecha_fin|DATE|pk=false|null=true
+  estatus|VARCHAR(30)|pk=false|null=true
+  matricula_trabajador|INT(10)|pk=false|null=false
+==== CARRERAS (line 675) ====
+  clave_carrera|VARCHAR(30)|pk=true|null=false
+  nombre_carrera|VARCHAR(30)|pk=false|null=false
+  plan_estudios|VARCHAR(30)|pk=false|null=true
+  total_creditos|INT(15)|pk=false|null=false
+==== RETICULAS (line 825) ====
+  clave_reticula|INT(10)|pk=true|null=false
+  plan_estudios|VARCHAR(30)|pk=false|null=false
+  semestre|INT(10)|pk=false|null=false
+  creditos|INT(10)|pk=false|null=false
+  cadena_materia|VARCHAR(30)|pk=false|null=false
+==== ALUMNOS (line 995) ====
+  numero_control|INT(10)|pk=true|null=false
+  nombre|VARCHAR(30)|pk=false|null=false
+  snombre|VARCHAR(30)|pk=false|null=true
+  apellido_paterno|VARCHAR(30)|pk=false|null=false
+  apellido_materno|VARCHAR(30)|pk=false|null=true
+  año_ingreso|INT(5)|pk=false|null=false
+  fecha_nacimiento|DATE|pk=false|null=false
+==== GRUPOS (line 1365) ====
+  clave_grupo|INT(10)|pk=true|null=false
+  cupo|NUM(3)|pk=false|null=false
+  no_edificio|INT(10)|pk=false|null=false
+  clave_materia|INT(10)|pk=false|null=false
+  matricula_trabajador|INT(10)|pk=false|null=false
+==== HISTORIAL_ALUMNOS (line 1535) ====
+  id_calificacion_final|INT(10)|pk=true|null=false
+  calificacion_ordinaria|NUM(3)|pk=false|null=true
+  calificacion_segunda_oportunidad|NUM(3)|pk=false|null=true
+  calificacion_final|NUM(3)|pk=false|null=true
+  fecha_captura|DATE|pk=false|null=true
+  capturada|BOOLEAN|pk=false|null=false
+  numero_control|INT(10)|pk=false|null=false
+==== EDIFICIOS (line 1831) ====
+  no_edificio|INT(10)|pk=true|null=false
+  nombre_edificio|VARCHAR(30)|pk=false|null=false
+  laboratorio|ENUM("SI","NO")|pk=false|null=false
+  salon|ENUM("SI","NO")|pk=false|null=false
+  auditorio|ENUM("SI","NO")|pk=false|null=false
+  capacidad|NUM(5)|pk=false|null=false
+==== KARDEXS (line 2021) ====
+  ingreso|INT(10)|pk=true|null=false
+  periodo|ENUM("VER","EN-JU","AG-DIC")|pk=false|null=false
+  avance|NUM(5)|pk=false|null=false
+  numero_control|INT(10)|pk=false|null=false
+  clave_materia|INT(10)|pk=false|null=false
+  calificacion_final|NUM(3)|pk=false|null=false
+==== MATERIAS (line 2465) ====
+  clave_materia|INT(10)|pk=true|null=false
+  nombre_materia|VARCHAR(30)|pk=false|null=false
+  creditos|NUM(5)|pk=false|null=false
+  horas_teoricas|NUM(10)|pk=false|null=true
+  horas_practicas|INT(10)|pk=false|null=true
+  semestre_recomendado|INT(5)|pk=false|null=true
+  tipo_materia|VARCHAR(30)|pk=false|null=true
+==== USUARIOS (line 2724) ====
+  id_usuario|INT(10)|pk=true|null=false
+  usuario|VARCHAR(50)|pk=false|null=false
+  contrasena_hash|VARCHAR(255)|pk=false|null=false
+  rol|ENUM("Admin","Docente","Alumno")|pk=false|null=false
+  numero_control|INT(10)|pk=false|null=true
+  matricula_trabajador|INT(10)|pk=false|null=true
+==== HORARIOS (line 3027) ====
+  id_horario|INT(10)|pk=true|null=false
+  dia_semana|ENUM("LUN","MAR","MIE","JUE","VIE","SAB")|pk=false|null=false
+  hora_inicio|TIME|pk=false|null=false
+  hora_fin|TIME|pk=false|null=false
+  salon|VARCHAR(20)|pk=false|null=false
+  matricula_trabajador|INT(10)|pk=false|null=false
+  numero_control|INT(10)|pk=false|null=false

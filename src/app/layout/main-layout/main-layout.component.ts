@@ -29,27 +29,38 @@ export class MainLayoutComponent {
   }
 
   private actualizarEncabezado(url: string): void {
-    if (url.startsWith('/admin/carreras')) {
-      this.titulo.set('Carreras');
-      this.subtitulo.set('Administra la oferta académica y sus planes de estudio.');
-      return;
-    }
+    const encabezados: Array<[string, string, string]> = [
+      ['/admin/panel', 'Panel administrativo', 'Resumen general de la operación académica.'],
+      ['/admin/alumnos', 'Alumnos', 'Administra expedientes, estatus y datos de contacto.'],
+      ['/admin/docentes', 'Docentes', 'Plantilla docente y datos institucionales.'],
+      ['/admin/carreras', 'Carreras', 'Oferta académica y planes de estudio.'],
+      ['/admin/materias', 'Materias', 'Catálogo de asignaturas y créditos.'],
+      ['/admin/reticula', 'Retícula', 'Materias por plan de estudios y semestre.'],
+      ['/admin/grupos', 'Grupos', 'Apertura de grupos, cupo y asignación docente.'],
+      ['/admin/horarios', 'Horarios', 'Bloques de clase, aulas y validación de empalmes.'],
+      ['/admin/cargas', 'Cargas académicas', 'Inscripción de alumnos a grupos.'],
+      ['/admin/calificaciones', 'Calificaciones', 'Captura y seguimiento de resultados.'],
+      ['/admin/edificios', 'Edificios', 'Infraestructura y capacidad instalada.'],
+      ['/admin/areas', 'Áreas', 'Áreas de adscripción del personal.'],
+      ['/admin/historial-docente', 'Historial docente', 'Trayectoria laboral y estatus del personal.'],
+      ['/admin/usuarios', 'Usuarios', 'Accesos, roles y credenciales del sistema.'],
+      ['/docente/panel', 'Panel docente', 'Resumen de tu actividad académica.'],
+      ['/docente/horario', 'Mi horario', 'Consulta tus clases y espacios asignados.'],
+      ['/docente/mis-grupos', 'Mis grupos', 'Grupos, materias y alumnos asignados.'],
+      ['/docente/calificaciones', 'Calificaciones', 'Captura las calificaciones de tus grupos.'],
+      ['/docente/mi-perfil', 'Mi perfil', 'Datos personales y adscripción.'],
+      ['/alumno/panel', 'Panel del alumno', 'Resumen de tu avance académico.'],
+      ['/alumno/horario', 'Mi horario', 'Tu agenda académica de la semana.'],
+      ['/alumno/carga', 'Mi carga académica', 'Materias inscritas y horarios del periodo.'],
+      ['/alumno/kardex', 'Kardex', 'Historial de calificaciones y créditos.'],
+      ['/alumno/reticula', 'Retícula', 'Mapa curricular de tu carrera.'],
+      ['/alumno/mi-perfil', 'Mi perfil', 'Datos personales y de contacto.']
+    ];
 
-    if (url.startsWith('/docente/horario')) {
-      this.titulo.set('Mi horario');
-      this.subtitulo.set('Consulta tus clases y espacios asignados para el periodo.');
-      return;
-    }
-
-    if (url.startsWith('/docente/mis-grupos')) {
-      this.titulo.set('Mis grupos');
-      this.subtitulo.set('Revisa las materias y grupos que tienes asignados.');
-      return;
-    }
-
-    if (url.startsWith('/alumno/horario')) {
-      this.titulo.set('Mi horario');
-      this.subtitulo.set('Tu agenda académica de la semana.');
+    const encontrado = encabezados.find(([ruta]) => url.startsWith(ruta));
+    if (encontrado) {
+      this.titulo.set(encontrado[1]);
+      this.subtitulo.set(encontrado[2]);
       return;
     }
 

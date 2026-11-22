@@ -1,0 +1,228 @@
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="book-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : dato(resumen().materias) }}</div>
+        <div class="stat-label">Materias del plan</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon stat-icon--success"><ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : dato(resumen().aprobadas) }}</div>
+        <div class="stat-label">Aprobadas</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon stat-icon--warning"><ion-icon name="time-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : dato(resumen().cursando) }}</div>
+        <div class="stat-label">Cursando</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon stat-icon--muted"><ion-icon name="ellipse-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : dato(resumen().pendientes) }}</div>
+        <div class="stat-label">Pendientes</div>
+      </div>
+    </div>
+  </div>
+
+  @if (alumno(); as info) {
+    <section class="card card-pad summary-card">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span>Alumno</span>
+          <strong>{{ info.nombre_completo || info.nombre }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>Número de control</span>
+          <strong>{{ info.numero_control }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>Carrera</span>
+          <strong>{{ info.nombre_carrera || '—' }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>Créditos acumulados</span>
+          <strong>{{ dato(info.creditos_acumulados) }} / {{ dato(resumen().creditos ?? info.total_creditos) }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>Avance</span>
+          <strong>{{ dato(info.avance) }}%</strong>
+        </div>
+        <div class="detail-item">
+          <span>Promedio general</span>
+          <strong>{{ dato(resumen().promedio) }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>Estatus</span>
+          <strong>{{ info.estatus }}</strong>
+        </div>
+        <div class="detail-item">
+          <span>Materias reprobadas</span>
+          <strong>{{ dato(resumen().reprobadas) }}</strong>
+        </div>
+      </div>
+    </section>
+  }
+
+  <section class="card card-pad reticula-head">
+    <div>
+      <span class="page-eyebrow">Retícula</span>
+      <h3>Materias por semestre</h3>
+      <p class="muted">Cada tarjeta muestra la clave, los créditos y tu calificación final. Usa el botón de seriación para ver requisitos y materias habilitadas.</p>
+    </div>
+    <div class="legend" aria-label="Leyenda de estados">
+      <span class="badge badge-success">Aprobada</span>
+      <span class="badge badge-warning">Cursando</span>
+      <span class="badge badge-danger">Reprobada</span>
+      <span class="badge">Pendiente</span>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="input-wrap">
+      <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+      <input
+        class="input"
+        type="search"
+        name="busqueda"
+        placeholder="Buscar materia, clave, semestre o estado..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+      @if (busqueda()) {
+        <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <span class="toolbar-meta">{{ filtradas().length }} de {{ reticula().length }} materias</span>
+
+    <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Actualizar</span>
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="semestres-grid">
+      @for (item of [1, 2, 3]; track item) {
+        <section class="semestre-card">
+          <div class="skeleton skeleton-title"></div>
+          @for (materia of [1, 2, 3, 4, 5]; track materia) {
+            <div class="skeleton materia-skeleton"></div>
+          }
+        </section>
+      }
+    </div>
+  } @else if (semestres().length === 0) {
+    <div class="empty-card">
+      <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
+      <h4>Sin materias para mostrar</h4>
+      <p class="muted">{{ reticula().length === 0 ? 'No se encontró la retícula de tu plan de estudios.' : 'Prueba con otra búsqueda.' }}</p>
+    </div>
+  } @else {
+    <div class="semestres-grid">
+      @for (semestre of semestres(); track semestre.semestre) {
+        <section class="semestre-card">
+          <header class="semestre-head">
+            <div>
+              <p class="muted">{{ semestre.materias.length }} materias · {{ semestre.creditos }} créditos</p>
+            </div>
+          </header>
+
+          <div class="materias-list">
+            @for (materia of semestre.materias; track materia.clave_materia) {
+              <article [class]="'materia-card ' + claseEstado(materia.situacion)">
+                <div class="materia-top">
+                  <span class="materia-clave">{{ claveFormateada(materia.clave_materia) }}</span>
+                  @if (materia.calificacion_final !== null && materia.calificacion_final !== undefined && materia.calificacion_final !== '') {
+                    <span class="materia-nota">{{ dato(materia.calificacion_final) }}</span>
+                  }
+                </div>
+                <h5 class="materia-nombre" [title]="materia.nombre_materia">{{ materia.nombre_materia }}</h5>
+                <div class="materia-meta">
+                  <span>{{ dato(materia.creditos) }} cr.</span>
+                  <span class="estado-dot" aria-hidden="true"></span>
+                  <span>{{ etiquetaEstado(materia.situacion) }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="seriacion-btn"
+                  [disabled]="!tieneSeriacion(materia)"
+                  (click)="abrirSeriacion(materia)"
+                  [attr.aria-label]="'Ver seriación de ' + materia.nombre_materia"
+                >
+                  <ion-icon name="git-branch-outline" aria-hidden="true"></ion-icon>
+                  <span>{{ tieneSeriacion(materia) ? 'Ver seriación' : 'Sin seriación' }}</span>
+                </button>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+
+  @if (materiaSeleccionada(); as materia) {
+    <div class="modal-backdrop" (click)="cerrarSeriacion()">
+      <div
+        class="seriacion-modal"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="'Seriación de ' + materia.nombre_materia"
+        (click)="$event.stopPropagation()"
+      >
+        <header class="seriacion-head">
+          <div>
+            <span class="page-eyebrow">Seriación</span>
+            <h3>{{ materia.nombre_materia }}</h3>
+            <p class="muted">{{ claveFormateada(materia.clave_materia) }} · {{ dato(materia.creditos) }} créditos · {{ etiquetaEstado(materia.situacion) }}</p>
+          </div>
+          <button type="button" class="btn btn-ghost icon-btn" (click)="cerrarSeriacion()" aria-label="Cerrar seriación">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </header>
+
+        <div class="seriacion-section">
+          <h4>Requiere</h4>
+          @if (materia.requisito) {
+            <span class="seriacion-chip">{{ claveFormateada(materia.requisito.clave_materia) }} · {{ materia.requisito.nombre_materia }}</span>
+          } @else {
+            <p class="muted">Sin requisito registrado.</p>
+          }
+        </div>
+
+        <div class="seriacion-section">
+          <h4>Habilita</h4>
+          @if (materia.habilita?.length) {
+            <div class="seriacion-chips">
+              @for (siguiente of materia.habilita; track siguiente.clave_materia) {
+                <span class="seriacion-chip">{{ claveFormateada(siguiente.clave_materia) }} · {{ siguiente.nombre_materia }}</span>
+              }
+            </div>
+          } @else {
+            <p class="muted">No habilita materias posteriores.</p>
+          }
+        </div>
+
+        <footer class="seriacion-foot">
+          <button type="button" class="btn btn-secondary" (click)="cerrarSeriacion()">Cerrar</button>
+        </footer>
+      </div>
+    </div>
+  }
+</div>

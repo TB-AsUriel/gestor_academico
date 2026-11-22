@@ -1,0 +1,98 @@
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="book-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : totalMaterias() }}</div>
+        <div class="stat-label">Materias inscritas</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="ribbon-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : totalCreditos() }}</div>
+        <div class="stat-label">Créditos del periodo</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon></span>
+      <div>
+        <div class="stat-value">{{ loading() ? '—' : periodos().length }}</div>
+        <div class="stat-label">Periodos con carga</div>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton list-skeleton"></div>
+  } @else if (periodos().length === 0) {
+    <div class="empty-state card">
+      <ion-icon name="folder-open-outline" aria-hidden="true"></ion-icon>
+      <h3>Sin carga académica</h3>
+      <p class="muted">Aún no tienes materias inscritas en ningún periodo.</p>
+    </div>
+  } @else {
+    @for (periodo of periodos(); track periodo.clave_periodo) {
+      <section class="period-block">
+        <div class="period-head">
+          <div>
+            <h3>{{ periodo.clave_periodo }}</h3>
+            <p class="muted">{{ periodo.nombre_periodo }}</p>
+          </div>
+          <div class="period-badges">
+            @if (periodo.activo) {
+              <span class="badge badge-success">Periodo activo</span>
+            }
+            <span class="badge">{{ periodo.materias.length }} materias</span>
+            <span class="badge badge-primary">{{ periodo.creditos }} créditos</span>
+          </div>
+        </div>
+
+        <div class="materias-grid">
+          @for (materia of periodo.materias; track materia.clave_grupo + '|' + materia.clave_materia) {
+            <article class="materia-card card">
+              <div class="materia-head">
+                <span class="materia-icon"><ion-icon name="document-text-outline" aria-hidden="true"></ion-icon></span>
+                <div>
+                  <h4>{{ materia.nombre_materia }}</h4>
+                  <p class="muted">{{ materia.clave_materia }} · Grupo {{ materia.clave_grupo }}</p>
+                </div>
+                <span class="badge">{{ materia.creditos }} cr.</span>
+              </div>
+
+              <div class="materia-meta">
+                <span><ion-icon name="person-outline" aria-hidden="true"></ion-icon> {{ materia.docente }}</span>
+                @if (materia.semestre) {
+                  <span><ion-icon name="layers-outline" aria-hidden="true"></ion-icon> Semestre {{ materia.semestre }}</span>
+                }
+                @if (materia.turno) {
+                  <span><ion-icon name="time-outline" aria-hidden="true"></ion-icon> {{ materia.turno }}</span>
+                }
+              </div>
+
+              <div class="horario-list">
+                @for (horario of materia.horarios; track horario.dia + horario.inicio + horario.fin) {
+                  <div class="horario-row">
+                    <span class="horario-dia">{{ horario.dia }}</span>
+                    <span class="horario-hora">{{ horario.inicio }} — {{ horario.fin }}</span>
+                    <span class="horario-salon">{{ horario.salon }}</span>
+                  </div>
+                } @empty {
+                  <p class="muted small">Sin horario asignado.</p>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  }
+</div>

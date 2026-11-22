@@ -1,0 +1,203 @@
+.error-banner {
+  margin-bottom: 18px;
+}
+
+.error-banner .btn {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.list-skeleton {
+  height: 220px;
+  border-radius: var(--app-radius-lg);
+}
+
+.period-block {
+  margin-bottom: 22px;
+}
+
+.period-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.period-head h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.period-head p {
+  margin-top: 2px;
+  font-size: 0.8rem;
+}
+
+.period-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.materias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 14px;
+}
+
+.materia-card {
+  padding: 16px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.materia-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.materia-head > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.materia-head h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.materia-head p {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.materia-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
+}
+
+.materia-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--app-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.materia-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.horario-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--app-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+  max-width: 100%;
+}
+
+.horario-row {
+  display: grid;
+  grid-template-columns: 90px minmax(110px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 9px;
+  border-radius: var(--app-radius-sm);
+  background: var(--app-surface-2);
+  font-size: 0.76rem;
+  min-width: 280px;
+}
+
+.horario-dia {
+  color: var(--app-primary);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.horario-hora {
+  color: var(--app-text-soft);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.horario-salon {
+  color: var(--app-muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.small {
+  font-size: 0.76rem;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 46px 24px;
+  text-align: center;
+}
+
+.empty-state ion-icon {
+  font-size: 2.6rem;
+  color: var(--app-primary);
+}
+
+.empty-state h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .period-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .period-badges {
+    justify-content: flex-start;
+  }
+
+  .materias-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .materia-head {
+    flex-wrap: wrap;
+  }
+
+  .materia-head .badge {
+    margin-left: auto;
+  }
+
+  .horario-row {
+    grid-template-columns: 76px minmax(104px, 1fr) auto;
+    gap: 6px;
+    padding: 7px 8px;
+    font-size: 0.72rem;
+  }
+}

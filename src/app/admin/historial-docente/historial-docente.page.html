@@ -1,0 +1,214 @@
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="toolbar">
+    <div class="input-wrap">
+      <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+      <input
+        class="input"
+        type="search"
+        name="busqueda"
+        placeholder="Buscar por docente, área o estatus..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+      @if (busqueda()) {
+        <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <span class="toolbar-meta">{{ filasFiltradas().length }} de {{ filas().length }} registros</span>
+
+    <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Actualizar</span>
+    </button>
+
+    <button type="button" class="btn btn-primary" (click)="nuevo()">
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+      <span>Agregar registro</span>
+    </button>
+  </div>
+
+  @if (formOpen()) {
+    <section class="form-card">
+      <div class="form-card-head">
+        <div>
+          <h3>{{ editando() ? 'Editar registro laboral' : 'Nuevo registro laboral' }}</h3>
+          <p>Documenta la adscripción, funciones y vigencia del personal.</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-icon" (click)="cancelar()" aria-label="Cerrar">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Docente *</span>
+          <select
+            class="input"
+            name="matricula_trabajador"
+            [ngModel]="valores().matricula_trabajador"
+            (ngModelChange)="setValor('matricula_trabajador', $event)"
+            [disabled]="editando()"
+            required
+          >
+            <option value="">Selecciona un docente</option>
+            @for (docente of docentes(); track docente.matricula_trabajador) {
+              <option [value]="docente.matricula_trabajador">
+                {{ docente.matricula_trabajador }} - {{ docente.nombre }} {{ docente.apellido_paterno }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Área *</span>
+          <select
+            class="input"
+            name="id_rol"
+            [ngModel]="valores().id_rol"
+            (ngModelChange)="setValor('id_rol', $event)"
+            [disabled]="editando()"
+            required
+          >
+            <option value="">Selecciona un área</option>
+            @for (area of areas(); track area.id_area_rol) {
+              <option [ngValue]="area.id_area_rol">{{ area.nombre_area }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Fecha de inicio *</span>
+          <input
+            class="input"
+            type="date"
+            name="fecha_inicio"
+            [ngModel]="valores().fecha_inicio"
+            (ngModelChange)="setValor('fecha_inicio', $event)"
+            [disabled]="editando()"
+            required
+          />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Fecha de fin</span>
+          <input
+            class="input"
+            type="date"
+            name="fecha_fin"
+            [ngModel]="valores().fecha_fin"
+            (ngModelChange)="setValor('fecha_fin', $event)"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Administrativo *</span>
+          <select class="input" name="administrativo" [ngModel]="valores().administrativo" (ngModelChange)="setValor('administrativo', $event)" required>
+            <option value="SI">Sí</option>
+            <option value="NO">No</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Docente *</span>
+          <select class="input" name="docente" [ngModel]="valores().docente" (ngModelChange)="setValor('docente', $event)" required>
+            <option value="SI">Sí</option>
+            <option value="NO">No</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Estatus *</span>
+          <select class="input" name="estatus" [ngModel]="valores().estatus" (ngModelChange)="setValor('estatus', $event)" required>
+            <option value="ACTIVO">Activo</option>
+            <option value="INACTIVO">Inactivo</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="guardando()">
+          @if (guardando()) {
+            <span class="spinner" aria-hidden="true"></span>
+          } @else {
+            <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
+          }
+          <span>Guardar</span>
+        </button>
+      </div>
+    </section>
+  }
+
+  <div class="data-card">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Matrícula</th>
+            <th>Docente</th>
+            <th>Área</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Administrativo</th>
+            <th>Docente</th>
+            <th>Estatus</th>
+            <th class="actions-col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            @for (item of [1, 2, 3, 4]; track item) {
+              <tr>
+                @for (col of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track col) {
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                }
+              </tr>
+            }
+          } @else {
+            @for (fila of filasFiltradas(); track fila.id_historial) {
+              <tr>
+                <td>{{ fila.matricula_trabajador }}</td>
+                <td><strong>{{ fila.nombre_docente }}</strong></td>
+                <td>{{ fila.nombre_area }}</td>
+                <td>{{ fila.fecha_inicio }}</td>
+                <td>{{ fila.fecha_fin || '—' }}</td>
+                <td>{{ fila.administrativo }}</td>
+                <td>{{ fila.docente }}</td>
+                <td>
+                  <span class="badge" [class.badge-success]="fila.estatus === 'ACTIVO'" [class.badge-danger]="fila.estatus !== 'ACTIVO'">
+                    {{ fila.estatus }}
+                  </span>
+                </td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="editar(fila)" aria-label="Editar">
+                      <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm" (click)="eliminar(fila)" aria-label="Eliminar">
+                      <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (!loading() && filasFiltradas().length === 0) {
+      <div class="table-empty">No hay registros laborales.</div>
+    }
+  </div>
+</div>

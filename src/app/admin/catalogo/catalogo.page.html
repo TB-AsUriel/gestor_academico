@@ -1,0 +1,178 @@
+@if (config(); as cfg) {
+  <div class="page">
+    @if (error()) {
+      <div class="banner banner-danger error-banner" role="alert">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        <span>{{ error() }}</span>
+        <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+      </div>
+    }
+
+    <div class="toolbar">
+      <div class="input-wrap">
+        <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+        <input
+          class="input"
+          type="search"
+          name="busqueda"
+          placeholder="Buscar en {{ cfg.titulo.toLowerCase() }}..."
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          aria-label="Buscar registros"
+        />
+        @if (busqueda()) {
+          <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        }
+      </div>
+
+      <span class="toolbar-meta">
+        {{ filasFiltradas().length }} de {{ filas().length }} registros
+      </span>
+
+      <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
+        <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+        <span>Actualizar</span>
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="nuevo()">
+        <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+        <span>Agregar</span>
+      </button>
+    </div>
+
+    @if (formOpen()) {
+      <section class="form-card">
+        <div class="form-card-head">
+          <div>
+            <h3>{{ editando() ? 'Editar' : 'Nuevo' }} {{ cfg.singular }}</h3>
+            <p>{{ cfg.descripcion }}</p>
+          </div>
+          <button type="button" class="btn btn-ghost btn-icon" (click)="cancelar()" aria-label="Cerrar formulario">
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+
+        <div class="form-grid">
+          @for (campo of camposVisibles(); track campo.key) {
+            <label class="field">
+              <span class="field-label">{{ campo.label }}{{ campo.required ? ' *' : '' }}</span>
+
+              @switch (campo.type) {
+                @case ('select') {
+                  <select
+                    class="input"
+                    [name]="campo.key"
+                    [ngModel]="valores()[campo.key]"
+                    (ngModelChange)="setValor(campo.key, $event)"
+                    [required]="campo.required === true"
+                  >
+                    <option [ngValue]="null">Selecciona una opción</option>
+                    @for (opcion of opcionesPara(campo); track opcion.value) {
+                      <option [ngValue]="opcion.value">{{ opcion.label }}</option>
+                    }
+                  </select>
+                }
+                @case ('textarea') {
+                  <textarea
+                    class="input"
+                    [name]="campo.key"
+                    rows="3"
+                    [placeholder]="campo.placeholder || ''"
+                    [ngModel]="valores()[campo.key]"
+                    (ngModelChange)="setValor(campo.key, $event)"
+                    [required]="campo.required === true"
+                  ></textarea>
+                }
+                @default {
+                  <input
+                    class="input"
+                    [type]="campo.type"
+                    [name]="campo.key"
+                    [placeholder]="campo.placeholder || ''"
+                    [attr.min]="campo.min"
+                    [attr.max]="campo.max"
+                    [attr.step]="campo.step"
+                    [ngModel]="valores()[campo.key]"
+                    (ngModelChange)="setValor(campo.key, $event)"
+                    [required]="campo.required === true"
+                  />
+                }
+              }
+            </label>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando()">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="guardando()">
+            @if (guardando()) {
+              <span class="spinner" aria-hidden="true"></span>
+            } @else {
+              <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
+            }
+            <span>{{ editando() ? 'Guardar cambios' : 'Crear registro' }}</span>
+          </button>
+        </div>
+      </section>
+    }
+
+    <div class="data-card">
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              @for (columna of cfg.columnas; track columna.key) {
+                <th scope="col">{{ columna.label }}</th>
+              }
+              <th scope="col" class="actions-col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading()) {
+              @for (item of [1, 2, 3, 4, 5]; track item) {
+                <tr>
+                  @for (columna of cfg.columnas; track columna.key) {
+                    <td><div class="skeleton cell-skeleton"></div></td>
+                  }
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                </tr>
+              }
+            } @else {
+              @for (fila of filasFiltradas(); track trackFila($index, fila)) {
+                <tr>
+                  @for (columna of cfg.columnas; track columna.key) {
+                    <td>{{ mostrarCelda(fila, columna) }}</td>
+                  }
+                  <td>
+                    <div class="table-actions">
+                      <button type="button" class="btn btn-secondary btn-sm" (click)="editar(fila)" aria-label="Editar">
+                        <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+                      </button>
+                      <button type="button" class="btn btn-ghost btn-sm" (click)="eliminar(fila)" aria-label="Eliminar">
+                        <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (!loading() && filasFiltradas().length === 0) {
+        <div class="table-empty">
+          @if (filas().length === 0) {
+            <p>Aún no hay registros en {{ cfg.titulo.toLowerCase() }}.</p>
+          } @else {
+            <p>No se encontraron resultados para “{{ busqueda() }}”.</p>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,130 @@
+@if (error()) {
+  <div class="page">
+    <div class="banner banner-danger" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  </div>
+} @else {
+  <div class="page">
+    <section class="welcome-card card">
+      <div>
+        <span class="page-eyebrow">Panel del alumno</span>
+        <h2>Hola, {{ nombre() }}</h2>
+        <p class="muted">
+          @if (resumen()?.alumno; as alumno) {
+            {{ alumno.numero_control }} · {{ alumno.nombre_carrera }} · Semestre {{ alumno.semestre_actual }}
+          } @else {
+            Consulta tu avance académico.
+          }
+        </p>
+      </div>
+      <a class="btn btn-primary" routerLink="/alumno/kardex">
+        <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>
+        <span>Ver kardex</span>
+      </a>
+    </section>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="clipboard-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : resumen()?.materias_inscritas ?? 0 }}</div>
+          <div class="stat-label">Materias inscritas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="ribbon-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : dato(resumen()?.alumno?.creditos_acumulados) }}</div>
+          <div class="stat-label">Créditos acumulados</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="trending-up-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : avance() + '%' }}</div>
+          <div class="stat-label">Avance de carrera</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="analytics-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : dato(resumen()?.kardex?.promedio) }}</div>
+          <div class="stat-label">Promedio general</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col panel-sections">
+      <section class="card card-pad">
+        <div class="section-heading">
+          <h3>Avance académico</h3>
+          <span class="badge badge-primary">{{ resumen()?.alumno?.nombre_carrera || 'Carrera' }}</span>
+        </div>
+
+        <div class="progress progress-lg">
+          <div class="progress-bar" [style.width.%]="avance()"></div>
+        </div>
+        <div class="progress-caption">
+          <span>{{ dato(resumen()?.alumno?.creditos_acumulados) }} créditos</span>
+          <span>Meta: {{ dato(resumen()?.alumno?.total_creditos) }}</span>
+        </div>
+
+        <div class="detail-grid compact">
+          <div class="detail-item">
+            <span>Aprobadas</span>
+            <strong>{{ dato(resumen()?.kardex?.aprobadas) }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Reprobadas</span>
+            <strong>{{ dato(resumen()?.kardex?.reprobadas) }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>En curso</span>
+            <strong>{{ dato(resumen()?.kardex?.en_curso) }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <div class="section-heading">
+          <h3>Periodo actual</h3>
+          @if (resumen()?.periodo; as periodo) {
+            <span class="badge badge-success">{{ periodo.clave_periodo }}</span>
+          }
+        </div>
+
+        @if (resumen()?.periodo; as periodo) {
+          <div class="period-highlight">
+            <strong>{{ periodo.nombre_periodo }}</strong>
+            <span class="muted">{{ periodo.fecha_inicio }} — {{ periodo.fecha_fin }}</span>
+            <span class="badge">{{ periodo.tipo_periodo }}</span>
+          </div>
+        } @else {
+          <p class="muted">No hay un periodo activo.</p>
+        }
+
+        <div class="quick-grid">
+          <a class="quick-link" routerLink="/alumno/horario">
+            <span class="quick-icon"><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon></span>
+            <span>Mi horario</span>
+          </a>
+          <a class="quick-link" routerLink="/alumno/carga">
+            <span class="quick-icon"><ion-icon name="clipboard-outline" aria-hidden="true"></ion-icon></span>
+            <span>Mi carga</span>
+          </a>
+          <a class="quick-link" routerLink="/alumno/reticula">
+            <span class="quick-icon"><ion-icon name="git-branch-outline" aria-hidden="true"></ion-icon></span>
+            <span>Retícula</span>
+          </a>
+          <a class="quick-link" routerLink="/alumno/mi-perfil">
+            <span class="quick-icon"><ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon></span>
+            <span>Mi perfil</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+}

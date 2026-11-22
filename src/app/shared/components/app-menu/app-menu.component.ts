@@ -22,9 +22,12 @@ export class AppMenuComponent {
     return 'Usuario';
   });
 
+  readonly nombreVisible = computed(() => {
+    return this.auth.usuario().nombre || this.auth.usuario().correo || 'Usuario';
+  });
+
   readonly inicial = computed(() => {
-    const correo = this.auth.usuario().correo;
-    return (correo?.charAt(0) || 'U').toUpperCase();
+    return (this.nombreVisible().charAt(0) || 'U').toUpperCase();
   });
 
   logout(): void {

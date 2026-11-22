@@ -1,0 +1,62 @@
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="skeleton profile-skeleton"></div>
+  } @else if (alumno(); as a) {
+    <section class="profile-card card">
+      <div class="profile-avatar">{{ (a.nombre || 'A').charAt(0) }}</div>
+      <div class="profile-main">
+        <span class="page-eyebrow">Alumno</span>
+        <h2>{{ a.nombre_completo || a.nombre }}</h2>
+        <p class="muted">{{ a.numero_control }} · {{ a.nombre_carrera || 'Sin carrera' }} · Semestre {{ a.semestre_actual }}</p>
+        <div class="profile-badges">
+          @if (a.estatus) { <span class="badge badge-success">{{ a.estatus }}</span> }
+          @if (a.plan_estudios) { <span class="badge">Plan {{ a.plan_estudios }}</span> }
+          <span class="badge badge-primary">{{ dato(a.avance) }}% de avance</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section class="card card-pad">
+        <div class="section-heading"><h3>Datos academicos</h3></div>
+        <div class="detail-grid">
+          <div class="detail-item"><span>Numero de control</span><strong>{{ a.numero_control }}</strong></div>
+          <div class="detail-item"><span>Carrera</span><strong>{{ a.nombre_carrera || '-' }}</strong></div>
+          <div class="detail-item"><span>Semestre actual</span><strong>{{ dato(a.semestre_actual) }}</strong></div>
+          <div class="detail-item"><span>Ano de ingreso</span><strong>{{ dato(a.anio_ingreso) }}</strong></div>
+          <div class="detail-item"><span>Creditos acumulados</span><strong>{{ dato(a.creditos_acumulados) }} / {{ dato(a.total_creditos) }}</strong></div>
+          <div class="detail-item"><span>Estatus</span><strong>{{ a.estatus || '-' }}</strong></div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <div class="section-heading"><h3>Datos de contacto</h3></div>
+        <div class="form-grid contact-grid">
+          <label class="field span-3"><span class="field-label">Correo institucional</span><input class="input" type="email" [ngModel]="correo()" readonly disabled /></label>
+          <label class="field"><span class="field-label">Telefono</span><input class="input" type="tel" [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" /></label>
+          <label class="field span-2"><span class="field-label">Calle</span><input class="input" type="text" [ngModel]="calle()" (ngModelChange)="calle.set($event)" /></label>
+          <label class="field"><span class="field-label">Colonia</span><input class="input" type="text" [ngModel]="colonia()" (ngModelChange)="colonia.set($event)" /></label>
+          <label class="field"><span class="field-label">No. exterior</span><input class="input" type="text" [ngModel]="noExterior()" (ngModelChange)="noExterior.set($event)" /></label>
+          <label class="field"><span class="field-label">No. interior</span><input class="input" type="text" [ngModel]="noInterior()" (ngModelChange)="noInterior.set($event)" /></label>
+          <label class="field"><span class="field-label">Codigo postal</span><input class="input" type="text" [ngModel]="codigoPostal()" (ngModelChange)="codigoPostal.set($event)" /></label>
+          <label class="field"><span class="field-label">Municipio</span><input class="input" type="text" [ngModel]="municipio()" (ngModelChange)="municipio.set($event)" /></label>
+          <label class="field"><span class="field-label">Estado</span><input class="input" type="text" [ngModel]="estado()" (ngModelChange)="estado.set($event)" /></label>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="guardando()">
+            @if (guardando()) { <span class="spinner" aria-hidden="true"></span> } @else { <ion-icon name="save-outline" aria-hidden="true"></ion-icon> }
+            <span>Guardar cambios</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</div>

@@ -1,0 +1,232 @@
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <div class="toolbar">
+    <div class="input-wrap">
+      <ion-icon class="input-icon" name="search-outline" aria-hidden="true"></ion-icon>
+      <input
+        class="input"
+        type="search"
+        name="busqueda"
+        placeholder="Buscar por correo, nombre o rol..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+      />
+      @if (busqueda()) {
+        <button type="button" class="input-action" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <span class="toolbar-meta">{{ filtrados().length }} de {{ usuarios().length }} usuarios</span>
+
+    <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Actualizar</span>
+    </button>
+
+    <button type="button" class="btn btn-secondary" (click)="alternarContrasenas()">
+      <ion-icon [name]="mostrarContrasenas() ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+      <span>{{ mostrarContrasenas() ? 'Ocultar contraseñas' : 'Mostrar contraseñas' }}</span>
+    </button>
+
+    <button type="button" class="btn btn-primary" (click)="nuevo()">
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+      <span>Nuevo usuario</span>
+    </button>
+  </div>
+
+  @if (formOpen()) {
+    <section class="form-card">
+      <div class="form-card-head">
+        <div>
+          <h3>{{ editando() ? 'Editar usuario' : 'Nuevo usuario' }}</h3>
+          <p>Define el correo, rol y la referencia académica del acceso.</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-icon" (click)="cancelar()" aria-label="Cerrar">
+          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">Correo *</span>
+          <input
+            class="input"
+            type="email"
+            name="correo"
+            [ngModel]="valores().correo"
+            (ngModelChange)="setValor('correo', $event)"
+            required
+          />
+        </label>
+
+        <div class="field">
+          <label class="field-label" for="contra">{{ editando() ? 'Nueva contraseña' : 'Contraseña *' }}</label>
+          <div class="password-wrap">
+            <input
+              id="contra"
+              class="input"
+              [type]="mostrarContraFormulario() ? 'text' : 'password'"
+              name="contra"
+              [placeholder]="editando() ? 'Dejar vacío para conservar' : 'Mínimo recomendado: 8 caracteres'"
+              [ngModel]="valores().contra"
+              (ngModelChange)="setValor('contra', $event)"
+              [required]="!editando()"
+            />
+            <button
+              type="button"
+              class="input-action"
+              (click)="alternarContraFormulario()"
+              [attr.aria-label]="mostrarContraFormulario() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              <ion-icon [name]="mostrarContraFormulario() ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Rol *</span>
+          <select class="input" name="rol" [ngModel]="valores().rol" (ngModelChange)="setValor('rol', $event)" required>
+            <option value="ALUMNO">Alumno</option>
+            <option value="DOCENTE">Docente</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </label>
+
+        @if (valores().rol === 'ALUMNO') {
+          <label class="field span-2">
+            <span class="field-label">Alumno *</span>
+            <select
+              class="input"
+              name="numero_control"
+              [ngModel]="valores().numero_control"
+              (ngModelChange)="setValor('numero_control', $event)"
+              required
+            >
+              <option value="">Selecciona un alumno</option>
+              @for (alumno of alumnos(); track alumno.numero_control) {
+                <option [value]="alumno.numero_control">
+                  {{ alumno.numero_control }} - {{ alumno.nombre }} {{ alumno.apellido_paterno }}
+                </option>
+              }
+            </select>
+          </label>
+        }
+
+        @if (valores().rol === 'DOCENTE') {
+          <label class="field span-2">
+            <span class="field-label">Docente *</span>
+            <select
+              class="input"
+              name="matricula_trabajador"
+              [ngModel]="valores().matricula_trabajador"
+              (ngModelChange)="setValor('matricula_trabajador', $event)"
+              required
+            >
+              <option value="">Selecciona un docente</option>
+              @for (docente of docentes(); track docente.matricula_trabajador) {
+                <option [value]="docente.matricula_trabajador">
+                  {{ docente.matricula_trabajador }} - {{ docente.nombre }} {{ docente.apellido_paterno }}
+                </option>
+              }
+            </select>
+          </label>
+        }
+
+        <label class="field">
+          <span class="field-label">Activo *</span>
+          <select class="input" name="activo" [ngModel]="valores().activo" (ngModelChange)="setValor('activo', $event)" required>
+            <option [ngValue]="1">Sí</option>
+            <option [ngValue]="0">No</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="guardando()">
+          @if (guardando()) {
+            <span class="spinner" aria-hidden="true"></span>
+          } @else {
+            <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
+          }
+          <span>Guardar</span>
+        </button>
+      </div>
+    </section>
+  }
+
+  <div class="data-card">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Correo</th>
+            <th>Nombre</th>
+            <th>Rol</th>
+            <th>Referencia</th>
+            <th>Contraseña</th>
+            <th>Activo</th>
+            <th>Creado</th>
+            <th class="actions-col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            @for (item of [1, 2, 3, 4]; track item) {
+              <tr>
+                @for (col of [1, 2, 3, 4, 5, 6, 7, 8]; track col) {
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                }
+              </tr>
+            }
+          } @else {
+            @for (usuario of filtrados(); track usuario.id_usuario) {
+              <tr>
+                <td><strong>{{ usuario.correo }}</strong></td>
+                <td>{{ usuario.nombre }}</td>
+                <td><span class="badge badge-primary">{{ usuario.rol }}</span></td>
+                <td>{{ referencia(usuario) }}</td>
+                <td>
+                  @if (mostrarContrasenas()) {
+                    <span class="password-cell" [class.muted]="!usuario.contrasena">{{ contrasenaDe(usuario) }}</span>
+                  } @else {
+                    <span class="password-cell muted">••••••••</span>
+                  }
+                </td>
+                <td>
+                  <span class="badge" [class.badge-success]="estaActivo(usuario)" [class.badge-danger]="!estaActivo(usuario)">
+                    {{ estaActivo(usuario) ? 'Sí' : 'No' }}
+                  </span>
+                </td>
+                <td>{{ fecha(usuario.fecha_creacion) }}</td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="editar(usuario)" aria-label="Editar">
+                      <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm" (click)="eliminar(usuario)" aria-label="Eliminar">
+                      <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (!loading() && filtrados().length === 0) {
+      <div class="table-empty">No hay usuarios registrados.</div>
+    }
+  </div>
+</div>

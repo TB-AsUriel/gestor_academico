@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost/api_gestor'
+  apiUrl: '/api_gestor'
 };

@@ -25,10 +25,10 @@
     </div>
 
     <div class="stat-card">
-      <span class="stat-icon"><ion-icon name="documents-outline" aria-hidden="true"></ion-icon></span>
+      <span class="stat-icon"><ion-icon name="person-add-outline" aria-hidden="true"></ion-icon></span>
       <div>
-        <div class="stat-value">{{ loading() ? '—' : resumen().asignaciones }}</div>
-        <div class="stat-label">Asignaciones activas</div>
+        <div class="stat-value">{{ loading() ? '—' : resumen().alumnos }}</div>
+        <div class="stat-label">Alumnos inscritos</div>
       </div>
     </div>
 
@@ -60,9 +60,7 @@
       }
     </div>
 
-    <span class="group-count">
-      {{ gruposFiltrados().length }} de {{ grupos().length }} grupos
-    </span>
+    <span class="group-count">{{ gruposFiltrados().length }} de {{ grupos().length }} grupos</span>
 
     <button type="button" class="btn btn-secondary" (click)="cargar()" [disabled]="loading()">
       <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
@@ -104,30 +102,54 @@
               </span>
               <div>
                 <strong>{{ grupo.clave_grupo }}</strong>
-                <small>Semestre {{ grupo.semestre }}</small>
+                <small>{{ grupo.nombre_materia }}</small>
               </div>
             </div>
-            <span class="badge badge-primary">{{ grupo.clave_periodo }}</span>
+            <span [class]="'badge ' + (grupo.periodo_activo ? 'badge-success' : 'badge-primary')">
+              {{ grupo.clave_periodo }}
+            </span>
           </div>
 
           <div class="group-meta">
+            <span>
+              <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
+              {{ grupo.clave_materia }} · {{ grupo.creditos }} cr.
+            </span>
             <span>
               <ion-icon name="sunny-outline" aria-hidden="true"></ion-icon>
               {{ turnoEtiqueta(grupo.turno) }}
             </span>
             <span>
-              <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
-              {{ grupo.materias.length }} materias
+              <ion-icon name="layers-outline" aria-hidden="true"></ion-icon>
+              Semestre {{ grupo.semestre }}
             </span>
           </div>
 
+          <div class="occupancy">
+            <div class="occupancy-caption">
+              <span>{{ grupo.inscritos }} de {{ grupo.cupo }} alumnos</span>
+              <strong>{{ ocupacion(grupo) }}%</strong>
+            </div>
+            <div class="progress">
+              <div class="progress-bar" [style.width.%]="ocupacion(grupo)"></div>
+            </div>
+          </div>
+
           <ul class="group-materias">
-            @for (materia of grupo.materias; track materia.id_asignacion) {
+            @for (horario of grupo.horarios; track horario.dia + horario.inicio) {
               <li class="materia-item">
                 <span class="materia-dot"></span>
                 <div class="materia-copy">
-                  <strong>{{ materia.nombre_materia }}</strong>
-                  <small>{{ materia.clave_materia }} · {{ materia.creditos }} créditos</small>
+                  <strong>{{ horario.dia }} · {{ horario.inicio }} — {{ horario.fin }}</strong>
+                  <small>Salón {{ horario.salon }}</small>
+                </div>
+              </li>
+            } @empty {
+              <li class="materia-item">
+                <span class="materia-dot"></span>
+                <div class="materia-copy">
+                  <strong>Sin horario asignado</strong>
+                  <small>Contacta a control escolar</small>
                 </div>
               </li>
             }
@@ -136,7 +158,15 @@
           <div class="group-footer">
             <a class="btn btn-secondary" routerLink="/docente/horario">
               <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
-              <span>Ver horario</span>
+              <span>Horario</span>
+            </a>
+            <a
+              class="btn btn-primary"
+              routerLink="/docente/calificaciones"
+              [queryParams]="{ clave_grupo: grupo.clave_grupo }"
+            >
+              <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+              <span>Calificaciones</span>
             </a>
           </div>
         </article>

@@ -13,20 +13,20 @@ export function normalizarHorario(
 
   return filas.map((fila) => ({
     ...fila,
-    dia: fila.dia ?? fila.nombre_dia ?? '',
-    materia: fila.materia ?? fila.nombre_materia ?? '',
-    grupo: fila.grupo ?? fila.clave_grupo ?? '',
-    docente: fila.docente ?? [
-      fila.docente_nombre,
-      fila.docente_ap_paterno,
-      fila.docente_ap_materno
-    ].filter(Boolean).join(' '),
-    salon: fila.salon ?? fila.aula ?? [
-      fila.edificio,
-      fila.numero_aula
-    ].filter(Boolean).join('-'),
-    hora_inicio: fila.hora_inicio ?? '',
-    hora_fin: fila.hora_fin ?? ''
+    dia: String(fila.dia ?? fila.nombre_dia ?? fila['dia_semana'] ?? ''),
+    materia: String(fila.materia ?? fila.nombre_materia ?? ''),
+    grupo: (fila.grupo ?? fila.clave_grupo ?? '') as HorarioBloque['grupo'],
+    docente: String(fila.docente ?? [
+      fila['docente_nombre'],
+      fila['docente_ap_paterno'],
+      fila['docente_ap_materno']
+    ].filter(Boolean).join(' ')),
+    salon: String(fila.salon ?? fila['aula'] ?? [
+      fila['edificio'],
+      fila['numero_aula']
+    ].filter(Boolean).join('-')),
+    hora_inicio: String(fila.hora_inicio ?? ''),
+    hora_fin: String(fila.hora_fin ?? '')
   }));
 }
 

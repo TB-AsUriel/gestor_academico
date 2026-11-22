@@ -1,6 +1,8 @@
 ﻿<aside class="sidebar">
   <div class="brand">
-    <div class="brand-mark">GA</div>
+    <div class="brand-mark">
+      <img src="assets/icon/icon-only.png" alt="Gestor Académico" />
+    </div>
     <div class="brand-copy">
       <strong>Gestor Académico</strong>
       <span>Panel institucional</span>
@@ -10,20 +12,79 @@
   <div class="user-card">
     <div class="avatar">{{ inicial() }}</div>
     <div class="user-copy">
-      <span class="user-email">{{ auth.usuario().correo || 'Usuario' }}</span>
+      <span class="user-email">{{ nombreVisible() }}</span>
       <span class="user-role">{{ rolEtiqueta() }}</span>
     </div>
   </div>
 
   <nav class="nav" aria-label="Navegación principal">
     @if (auth.usuario().rol === 'ADMIN') {
+      <a class="nav-link" routerLink="/admin/panel" routerLinkActive="active">
+        <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
+        <span>Panel</span>
+      </a>
+      <span class="nav-section">Académico</span>
+      <a class="nav-link" routerLink="/admin/alumnos" routerLinkActive="active">
+        <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+        <span>Alumnos</span>
+      </a>
+      <a class="nav-link" routerLink="/admin/docentes" routerLinkActive="active">
+        <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+        <span>Docentes</span>
+      </a>
       <a class="nav-link" routerLink="/admin/carreras" routerLinkActive="active">
         <ion-icon name="school-outline" aria-hidden="true"></ion-icon>
         <span>Carreras</span>
       </a>
+      <a class="nav-link" routerLink="/admin/materias" routerLinkActive="active">
+        <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
+        <span>Materias</span>
+      </a>
+      <a class="nav-link" routerLink="/admin/reticula" routerLinkActive="active">
+        <ion-icon name="git-branch-outline" aria-hidden="true"></ion-icon>
+        <span>Retícula</span>
+      </a>
+      <span class="nav-section">Operación</span>
+      <a class="nav-link" routerLink="/admin/grupos" routerLinkActive="active">
+        <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
+        <span>Grupos</span>
+      </a>
+      <a class="nav-link" routerLink="/admin/horarios" routerLinkActive="active">
+        <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+        <span>Horarios</span>
+      </a>
+      <a class="nav-link" routerLink="/admin/cargas" routerLinkActive="active">
+        <ion-icon name="clipboard-outline" aria-hidden="true"></ion-icon>
+        <span>Cargas</span>
+      </a>
+      <a class="nav-link" routerLink="/admin/calificaciones" routerLinkActive="active">
+        <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+        <span>Calificaciones</span>
+      </a>
+      <span class="nav-section">Infraestructura</span>
+      <a class="nav-link" routerLink="/admin/edificios" routerLinkActive="active">
+        <ion-icon name="business-outline" aria-hidden="true"></ion-icon>
+        <span>Edificios</span>
+      </a>
+      <a class="nav-link" routerLink="/admin/areas" routerLinkActive="active">
+        <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+        <span>Áreas</span>
+      </a>
+      <a class="nav-link" routerLink="/admin/historial-docente" routerLinkActive="active">
+        <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>
+        <span>Historial docente</span>
+      </a>
+      <a class="nav-link" routerLink="/admin/usuarios" routerLinkActive="active">
+        <ion-icon name="key-outline" aria-hidden="true"></ion-icon>
+        <span>Usuarios</span>
+      </a>
     }
 
     @if (auth.usuario().rol === 'DOCENTE') {
+      <a class="nav-link" routerLink="/docente/panel" routerLinkActive="active">
+        <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
+        <span>Panel</span>
+      </a>
       <a class="nav-link" routerLink="/docente/horario" routerLinkActive="active">
         <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
         <span>Horario</span>
@@ -32,12 +93,40 @@
         <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
         <span>Mis grupos</span>
       </a>
+      <a class="nav-link" routerLink="/docente/calificaciones" routerLinkActive="active">
+        <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+        <span>Calificaciones</span>
+      </a>
+      <a class="nav-link" routerLink="/docente/mi-perfil" routerLinkActive="active">
+        <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+        <span>Mi perfil</span>
+      </a>
     }
 
     @if (auth.usuario().rol === 'ALUMNO') {
+      <a class="nav-link" routerLink="/alumno/panel" routerLinkActive="active">
+        <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
+        <span>Panel</span>
+      </a>
       <a class="nav-link" routerLink="/alumno/horario" routerLinkActive="active">
         <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
         <span>Mi horario</span>
+      </a>
+      <a class="nav-link" routerLink="/alumno/carga" routerLinkActive="active">
+        <ion-icon name="clipboard-outline" aria-hidden="true"></ion-icon>
+        <span>Mi carga</span>
+      </a>
+      <a class="nav-link" routerLink="/alumno/kardex" routerLinkActive="active">
+        <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>
+        <span>Kardex</span>
+      </a>
+      <a class="nav-link" routerLink="/alumno/reticula" routerLinkActive="active">
+        <ion-icon name="git-branch-outline" aria-hidden="true"></ion-icon>
+        <span>Retícula</span>
+      </a>
+      <a class="nav-link" routerLink="/alumno/mi-perfil" routerLinkActive="active">
+        <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+        <span>Mi perfil</span>
       </a>
     }
   </nav>

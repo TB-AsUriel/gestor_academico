@@ -1,0 +1,108 @@
+@if (error()) {
+  <div class="page">
+    <div class="banner banner-danger" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  </div>
+} @else {
+  <div class="page">
+    <section class="welcome-card card">
+      <div>
+        <span class="page-eyebrow">Panel docente</span>
+        <h2>Hola, {{ nombre() }}</h2>
+        <p class="muted">
+          @if (resumen()?.periodo; as periodo) {
+            Periodo activo: {{ periodo.clave_periodo }} · {{ periodo.nombre_periodo }}
+          } @else {
+            No hay periodo activo.
+          }
+        </p>
+      </div>
+      <a class="btn btn-primary" routerLink="/docente/calificaciones">
+        <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+        <span>Capturar calificaciones</span>
+      </a>
+    </section>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="albums-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : resumen()?.resumen?.grupos ?? 0 }}</div>
+          <div class="stat-label">Grupos asignados</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="book-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : resumen()?.resumen?.materias ?? 0 }}</div>
+          <div class="stat-label">Materias</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : resumen()?.resumen?.alumnos ?? 0 }}</div>
+          <div class="stat-label">Alumnos inscritos</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ resumen()?.periodo?.clave_periodo || '—' }}</div>
+          <div class="stat-label">Periodo activo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col panel-sections">
+      <section class="card card-pad">
+        <div class="section-heading">
+          <h3>Mi adscripción</h3>
+          <a class="btn btn-secondary btn-sm" routerLink="/docente/mi-perfil">Ver perfil</a>
+        </div>
+        <div class="detail-grid compact">
+          <div class="detail-item">
+            <span>Matrícula</span>
+            <strong>{{ resumen()?.perfil?.matricula_trabajador || '—' }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Área</span>
+            <strong>{{ resumen()?.perfil?.nombre_area || '—' }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Estatus</span>
+            <strong>{{ resumen()?.perfil?.estatus || '—' }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <div class="section-heading">
+          <h3>Accesos rápidos</h3>
+        </div>
+        <div class="quick-grid">
+          <a class="quick-link" routerLink="/docente/horario">
+            <span class="quick-icon"><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon></span>
+            <span>Mi horario</span>
+          </a>
+          <a class="quick-link" routerLink="/docente/mis-grupos">
+            <span class="quick-icon"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span>
+            <span>Mis grupos</span>
+          </a>
+          <a class="quick-link" routerLink="/docente/calificaciones">
+            <span class="quick-icon"><ion-icon name="create-outline" aria-hidden="true"></ion-icon></span>
+            <span>Calificaciones</span>
+          </a>
+          <a class="quick-link" routerLink="/docente/mi-perfil">
+            <span class="quick-icon"><ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon></span>
+            <span>Mi perfil</span>
+          </a>
+        </div>
+      </section>
+    </div>
+
+  </div>
+}

@@ -84,8 +84,17 @@
 
 @media (max-width: 760px) {
   .topbar {
-    padding: 13px 16px;
-    gap: 14px;
+    position: static;
+    padding: 9px 14px;
+    border-bottom-color: var(--app-border-strong);
+    background: var(--app-surface);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+    gap: 10px;
+  }
+
+  .topbar h1 {
+    font-size: 1.05rem;
+    line-height: 1.15;
   }
 
   .topbar p,
@@ -99,7 +108,8 @@
   }
 
   .theme-toggle {
-    width: 38px;
+    width: 34px;
+    min-height: 34px;
     padding: 0;
     justify-content: center;
   }

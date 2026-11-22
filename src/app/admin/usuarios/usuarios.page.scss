@@ -1,0 +1,54 @@
+.error-banner {
+  margin-bottom: 18px;
+}
+
+.error-banner .btn {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.actions-col {
+  text-align: right;
+}
+
+.cell-skeleton {
+  width: 100%;
+  height: 14px;
+}
+
+.password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrap .input {
+  padding-right: 46px;
+}
+
+.password-wrap .input-action {
+  position: absolute;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--app-muted);
+}
+
+.password-wrap .input-action:hover {
+  background: var(--app-surface-2);
+  color: var(--app-text);
+}
+
+.password-cell {
+  display: inline-block;
+  max-width: 220px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86rem;
+  word-break: break-all;
+}

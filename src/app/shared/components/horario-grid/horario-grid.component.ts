@@ -32,7 +32,7 @@ export class HorarioGridComponent {
   }
 
   colorMateria(bloque: HorarioBloque): string {
-    const clave = bloque.clave_materia || bloque.materia || bloque.grupo || 'materia';
+    const clave = String(bloque.clave_materia || bloque.materia || bloque.grupo || 'materia');
     let hash = 0;
     for (let i = 0; i < clave.length; i += 1) {
       hash = (hash * 31 + clave.charCodeAt(i)) % 997;

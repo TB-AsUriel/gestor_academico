@@ -169,9 +169,30 @@
   font-weight: 500;
 }
 
+.occupancy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.occupancy-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--app-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.occupancy-caption strong {
+  color: var(--app-primary);
+}
+
 .group-footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 8px;
   margin-top: auto;
 }
 

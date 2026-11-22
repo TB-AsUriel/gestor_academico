@@ -1,0 +1,175 @@
+@if (error()) {
+  <div class="page">
+    <div class="banner banner-danger" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  </div>
+} @else {
+  <div class="page">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="person-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : conteo('alumno') }}</div>
+          <div class="stat-label">Alumnos registrados</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : conteo('docente') }}</div>
+          <div class="stat-label">Docentes</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="albums-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : resumen()?.grupos_activos ?? 0 }}</div>
+          <div class="stat-label">Grupos activos</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="clipboard-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : resumen()?.inscritos_activos ?? 0 }}</div>
+          <div class="stat-label">Inscripciones activas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : dato(resumen()?.estadistica?.aprobados ?? null) }}</div>
+          <div class="stat-label">Calificaciones aprobadas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="close-circle-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : dato(resumen()?.estadistica?.reprobados ?? null) }}</div>
+          <div class="stat-label">Calificaciones reprobadas</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="time-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : dato(resumen()?.estadistica?.pendientes ?? null) }}</div>
+          <div class="stat-label">Capturas pendientes</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><ion-icon name="analytics-outline" aria-hidden="true"></ion-icon></span>
+        <div>
+          <div class="stat-value">{{ loading() ? '—' : dato(resumen()?.estadistica?.promedio ?? null) }}</div>
+          <div class="stat-label">Promedio general</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col panel-sections">
+      <section class="card card-pad">
+        <div class="section-heading">
+          <h3>Catálogo académico</h3>
+          <a class="btn btn-secondary btn-sm" routerLink="/admin/carreras">Administrar</a>
+        </div>
+
+        <p class="muted">Resumen de la estructura registrada en el sistema.</p>
+
+        <div class="detail-grid compact">
+          <div class="detail-item">
+            <span>Carreras</span>
+            <strong>{{ conteo('carrera') }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Materias</span>
+            <strong>{{ conteo('materia') }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Edificios</span>
+            <strong>{{ conteo('edificio') }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Áreas</span>
+            <strong>{{ conteo('area') }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <div class="section-heading">
+          <h3>Accesos rápidos</h3>
+        </div>
+        <div class="quick-grid">
+          @for (acceso of accesos; track acceso.ruta) {
+            <a class="quick-link" [routerLink]="acceso.ruta">
+              <span class="quick-icon"><ion-icon [name]="acceso.icono" aria-hidden="true"></ion-icon></span>
+              <span>{{ acceso.titulo }}</span>
+            </a>
+          }
+        </div>
+      </section>
+    </div>
+
+    <section class="card groups-panel">
+      <div class="groups-head">
+        <div>
+          <h3>Grupos registrados</h3>
+          <p class="muted">{{ resumen()?.grupos?.length ?? 0 }} grupos programados</p>
+        </div>
+        <a class="btn btn-secondary" routerLink="/admin/grupos">
+          <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+          <span>Ver grupos</span>
+        </a>
+      </div>
+
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              <th>Materia</th>
+              <th>Docente</th>
+              <th>Edificio</th>
+              <th>Ocupación</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading()) {
+              @for (item of [1, 2, 3]; track item) {
+                <tr>
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                  <td><div class="skeleton cell-skeleton"></div></td>
+                </tr>
+              }
+            } @else {
+              @for (grupo of resumen()?.grupos ?? []; track grupo.clave_grupo) {
+                <tr>
+                  <td><strong>{{ grupo.clave_grupo }}</strong></td>
+                  <td>{{ grupo.nombre_materia }}</td>
+                  <td>{{ grupo.nombre_docente }}</td>
+                  <td>{{ grupo.nombre_edificio }}</td>
+                  <td>
+                    <div class="occupancy">
+                      <span class="mono">{{ grupo.inscritos }}/{{ grupo.cupo }}</span>
+                      <div class="progress">
+                        <div class="progress-bar" [style.width.%]="porcentajeOcupacion(grupo.inscritos, grupo.cupo)"></div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (!loading() && (resumen()?.grupos ?? []).length === 0) {
+        <div class="table-empty">No hay grupos registrados.</div>
+      }
+    </section>
+  </div>
+}

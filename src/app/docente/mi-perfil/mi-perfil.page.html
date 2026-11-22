@@ -1,0 +1,60 @@
+<div class="page">
+  @if (error()) {
+    <div class="banner banner-danger error-banner" role="alert">
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn-ghost" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="skeleton profile-skeleton"></div>
+  } @else if (perfil(); as p) {
+    <section class="profile-card card">
+      <div class="profile-avatar">{{ (p.nombre || 'D').charAt(0) }}</div>
+      <div class="profile-main">
+        <span class="page-eyebrow">Docente</span>
+        <h2>{{ p.nombre_completo || p.nombre }}</h2>
+        <p class="muted">{{ p.matricula_trabajador }} · {{ p.nombre_area || 'Sin area asignada' }}</p>
+        <div class="profile-badges">
+          @if (p.estatus) { <span class="badge badge-success">{{ p.estatus }}</span> }
+          @if (p.docente === 'SI') { <span class="badge">Docente</span> }
+          @if (p.administrativo === 'SI') { <span class="badge">Administrativo</span> }
+        </div>
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section class="card card-pad">
+        <div class="section-heading"><h3>Datos institucionales</h3></div>
+        <div class="detail-grid">
+          <div class="detail-item"><span>Matricula</span><strong>{{ p.matricula_trabajador }}</strong></div>
+          <div class="detail-item"><span>Area</span><strong>{{ p.nombre_area || '-' }}</strong></div>
+          <div class="detail-item"><span>Estatus</span><strong>{{ p.estatus || '-' }}</strong></div>
+          <div class="detail-item"><span>Fecha inicio</span><strong>{{ p.fecha_inicio || '-' }}</strong></div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <div class="section-heading"><h3>Datos de contacto</h3></div>
+        <div class="form-grid contact-grid">
+          <label class="field span-3"><span class="field-label">Correo institucional</span><input class="input" type="email" [ngModel]="correo()" readonly disabled /></label>
+          <label class="field"><span class="field-label">Telefono</span><input class="input" type="tel" [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" /></label>
+          <label class="field span-2"><span class="field-label">Calle</span><input class="input" type="text" [ngModel]="calle()" (ngModelChange)="calle.set($event)" /></label>
+          <label class="field"><span class="field-label">Colonia</span><input class="input" type="text" [ngModel]="colonia()" (ngModelChange)="colonia.set($event)" /></label>
+          <label class="field"><span class="field-label">No. exterior</span><input class="input" type="text" [ngModel]="noExterior()" (ngModelChange)="noExterior.set($event)" /></label>
+          <label class="field"><span class="field-label">No. interior</span><input class="input" type="text" [ngModel]="noInterior()" (ngModelChange)="noInterior.set($event)" /></label>
+          <label class="field"><span class="field-label">Codigo postal</span><input class="input" type="text" [ngModel]="codigoPostal()" (ngModelChange)="codigoPostal.set($event)" /></label>
+          <label class="field"><span class="field-label">Municipio</span><input class="input" type="text" [ngModel]="municipio()" (ngModelChange)="municipio.set($event)" /></label>
+          <label class="field"><span class="field-label">Estado</span><input class="input" type="text" [ngModel]="estado()" (ngModelChange)="estado.set($event)" /></label>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="guardando()">
+            @if (guardando()) { <span class="spinner" aria-hidden="true"></span> } @else { <ion-icon name="save-outline" aria-hidden="true"></ion-icon> }
+            <span>Guardar cambios</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</div>

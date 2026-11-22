@@ -2,7 +2,9 @@
   <div class="login-shell">
     <section class="brand-panel">
       <div class="brand-top">
-        <div class="brand-mark">GA</div>
+          <div class="brand-mark">
+            <img src="assets/icon/icon-only.png" alt="Gestor Académico" />
+          </div>
         <span>Gestor Académico</span>
       </div>
 
@@ -39,7 +41,9 @@
     <section class="login-panel">
       <div class="login-panel-top">
         <div class="mobile-brand">
-          <div class="brand-mark">GA</div>
+        <div class="brand-mark">
+          <img src="assets/icon/icon-only.png" alt="Gestor Académico" />
+        </div>
           <span>Gestor Académico</span>
         </div>
 
@@ -64,16 +68,33 @@
 
         <form class="login-form" (ngSubmit)="login()">
           <div class="field">
-            <label class="field-label" for="correo">Correo institucional</label>
+            <label class="field-label" for="ipServidor">IP del servidor</label>
             <div class="input-wrap">
-              <ion-icon class="input-icon" name="mail-outline" aria-hidden="true"></ion-icon>
+              <ion-icon class="input-icon" name="server-outline" aria-hidden="true"></ion-icon>
+              <input
+                id="ipServidor"
+                class="input"
+                type="text"
+                name="ipServidor"
+                autocomplete="off"
+                placeholder="Ej. 192.168.137.1"
+                [(ngModel)]="ipServidor"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="correo">Usuario / correo</label>
+            <div class="input-wrap">
+              <ion-icon class="input-icon" name="person-outline" aria-hidden="true"></ion-icon>
               <input
                 id="correo"
                 class="input"
-                type="email"
+                type="text"
                 name="correo"
-                autocomplete="email"
-                placeholder="nombre@universidad.edu.mx"
+                autocomplete="username"
+                placeholder="Usuario o correo institucional"
                 [(ngModel)]="correo"
                 required
               />
