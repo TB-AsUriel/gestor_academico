@@ -86,12 +86,11 @@ export const CATALOGOS: Record<string, CatalogoConfig> = {
     columnas: [
       { key: 'id_area_rol', label: 'ID' },
       { key: 'nombre_area', label: 'Nombre del área' },
-      { key: 'poblacion', label: 'Población', format: (f) => texto(f, 'poblacion') || '—' }
+      { key: 'poblacion', label: 'Docentes', format: (f) => texto(f, 'poblacion') || '0' }
     ],
     campos: [
       { key: 'id_area_rol', label: 'ID', type: 'number', hideOnCreate: true, hideOnEdit: true },
-      { key: 'nombre_area', label: 'Nombre del área', type: 'text', required: true },
-      { key: 'poblacion', label: 'Población', type: 'number', min: 0 }
+      { key: 'nombre_area', label: 'Nombre del área', type: 'text', required: true }
     ]
   },
   carreras: {

@@ -16,6 +16,7 @@ export interface Usuario {
 export interface Area {
   id_area_rol: number;
   nombre_area: string;
+  poblacion?: NumeroLike;
 }
 
 export interface Carrera {
